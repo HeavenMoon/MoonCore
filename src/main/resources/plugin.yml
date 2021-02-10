@@ -1,0 +1,4 @@
+name: MoonCore
+main: fr.heavenmoon.core.bukkit.MoonBukkitCore
+authors: [Dayela, Hakka]
+version: 1.0

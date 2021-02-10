@@ -1,0 +1,4 @@
+name: MoonCore
+main: fr.heavenmoon.core.bungee.MoonBungeeCore
+version: 1.0
+authors: [DAYELA, Hakka]
