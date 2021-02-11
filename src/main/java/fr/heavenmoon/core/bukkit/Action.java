@@ -92,6 +92,7 @@ public class Action {
         new DCommand("mute", "/mute", "Mute command", null, Collections.singletonList(""), new MuteCommand(plugin), plugin);
         new DCommand("alts", "/alts", "Alts command", null, Collections.singletonList(""), new AltsCommand(plugin), plugin);
         new DCommand("lobby", "/lobby", "Return to lobby", null, Collections.singletonList("hub"), new LobbyCommand(plugin), plugin);
+        new DCommand("modlogs", "/modlogs", "See current sanction of player", null, Collections.singletonList(""), new ModlogsCommand(plugin), plugin);
     }
 
 }
