@@ -7,7 +7,6 @@ import fr.heavenmoon.core.common.format.message.MessageType;
 import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.core.common.utils.math.MathUtils;
 import fr.heavenmoon.core.common.utils.time.CustomDate;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import net.minecraft.server.v1_8_R3.NBTTagList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,8 +24,7 @@ public class PlayerUtils
 	public static void toggleFly(Player sender)
 	{
 		CustomPlayer customPlayer =
-				MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-						sender.getUniqueId());
+				MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().getCustomPlayer(sender.getUniqueId());
 		if (customPlayer.getModerationData().isFly())
 		{
 			customPlayer.getModerationData().setFly(false);
@@ -39,7 +37,7 @@ public class PlayerUtils
 			sender.setAllowFlight(true);
 			(new Message(PrefixType.MODO, "Vous pouvez maintenant voler.")).send(sender);
 		}
-		MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+		MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(customPlayer);
 	}
 	
 	public static void toggleFly(Player sender, String target)
@@ -51,8 +49,7 @@ public class PlayerUtils
 		}
 		Player targetPlayer = Bukkit.getPlayer(target);
 		CustomPlayer customTarget =
-				MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().getCustomPlayer(targetPlayer.getName(),
-						targetPlayer.getUniqueId());
+				MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().getCustomPlayer(targetPlayer.getUniqueId());
 		if (customTarget.getModerationData().isFly())
 		{
 			customTarget.getModerationData().setFly(false);
@@ -67,7 +64,7 @@ public class PlayerUtils
 			new Message(PrefixType.MODO, ChatColor.GRAY + target + ChatColor.LIGHT_PURPLE + " peut maintenant voler.").send(sender);
 			new Message(PrefixType.MODO, "Vous pouvez maintenant voler.").send(targetPlayer);
 		}
-		MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(RedisKey.PLAYER, customTarget);
+		MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(customTarget);
 	}
 	
 	public static void killPlayer(CommandSender sender, String name)
@@ -125,8 +122,7 @@ public class PlayerUtils
 	public static void setGamemode(Player sender, String gamemode)
 	{
 		CustomPlayer customPlayer =
-				MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-						sender.getUniqueId());
+				MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().getCustomPlayer(sender.getUniqueId());
 		if (MathUtils.isInteger(gamemode))
 		{
 			if (Integer.parseInt(gamemode) > 3 || Integer.parseInt(gamemode) < 0)
@@ -136,7 +132,7 @@ public class PlayerUtils
 			}
 			sender.setGameMode(GameMode.getByValue(Integer.parseInt(gamemode)));
 			customPlayer.setGamemode(Integer.parseInt(gamemode));
-			MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+			MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(customPlayer);
 			new Message(ChatColor.GRAY + "GameMode mis jour: " + ChatColor.GREEN + sender.getGameMode().toString().toUpperCase())
 					.send(sender);
 		}
@@ -148,7 +144,7 @@ public class PlayerUtils
 				{
 					sender.setGameMode(gameMode);
 					customPlayer.setGamemode(Integer.parseInt(gamemode));
-					MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+					MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(customPlayer);
 					(new Message(ChatColor.GRAY + "GameMode mis jour: " + ChatColor.GREEN + sender.getGameMode().toString().toUpperCase()))
 							.send(sender);
 					return;
@@ -167,8 +163,7 @@ public class PlayerUtils
 		}
 		Player targetPlayer = Bukkit.getPlayer(target);
 		CustomPlayer customTarget =
-				MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().getCustomPlayer(RedisKey.PLAYER
-						, targetPlayer.getUniqueId());
+				MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().getCustomPlayer(targetPlayer.getUniqueId());
 		if (MathUtils.isInteger(gamemode))
 		{
 			if (Integer.parseInt(gamemode) > 3 || Integer.parseInt(gamemode) < 0)
@@ -177,7 +172,7 @@ public class PlayerUtils
 				return;
 			}
 			customTarget.setGamemode(Integer.parseInt(gamemode));
-			MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(RedisKey.PLAYER, customTarget);
+			MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(customTarget);
 			targetPlayer.setGameMode(GameMode.getByValue(Integer.parseInt(gamemode)));
 			(new Message(ChatColor.GRAY + "GameMode mis jour: " + ChatColor.GREEN + targetPlayer.getGameMode().toString().toUpperCase()))
 					.send(targetPlayer);
@@ -194,7 +189,7 @@ public class PlayerUtils
 				{
 					targetPlayer.setGameMode(gameMode);
 					customTarget.setGamemode(gameMode.getValue());
-					MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(RedisKey.PLAYER, customTarget);
+					MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().commit(customTarget);
 					new Message(
 							ChatColor.GRAY + "GameMode mis jour: " + ChatColor.GREEN + targetPlayer.getGameMode().toString().toUpperCase())
 							.send(targetPlayer);
@@ -212,7 +207,7 @@ public class PlayerUtils
 	{
 		UUID uuid = BUniqueID.get(name);
 		CustomPlayer customPlayer =
-				MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+				MoonBukkitCore.get().getCommons().getPersistanceManager().getPlayerManager().getCustomPlayer(uuid);
 		if (customPlayer.isExist())
 		{
 			new Message(PrefixType.MODO,

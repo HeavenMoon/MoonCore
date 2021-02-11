@@ -9,7 +9,6 @@ import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -39,7 +38,7 @@ public class RankManager {
 
     public void setRank(CommandSender sender, String name, String rank, String permission) {
         UUID uuid = BUniqueID.get(name);
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
         RankList newRank = RankList.getByName(rank);
         RankList newRankPermission = RankList.getByName(permission);
         if (newRank == null || newRankPermission == null) {
@@ -47,7 +46,7 @@ public class RankManager {
             return;
         }
         if (sender instanceof Player) {
-            CustomPlayer customSender = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, ((Player) sender).getUniqueId());
+            CustomPlayer customSender = persistanceManager.getPlayerManager().getCustomPlayer(((Player) sender).getUniqueId());
             if (!customSender.hasPermission(newRank) || !customSender.hasPermission(newRankPermission)) {
                 new Message(PrefixType.ERROR, "Vous n'avez pas la permission de donner ce grade.").send(sender);
                 return;
@@ -92,7 +91,7 @@ public class RankManager {
         customPlayer.getRankData().setChatStyleCode(rank.getChatStyleCode());
         customPlayer.getRankData().setOrder(permission.getOrder());
         if (customPlayer.isOnline())
-            persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+            persistanceManager.getPlayerManager().commit(customPlayer);
         else persistanceManager.getPlayerManager().update(customPlayer);
         Player player = Bukkit.getPlayer(customPlayer.getName());
         if (customPlayer.isOnline() && player != null)
@@ -101,7 +100,7 @@ public class RankManager {
     }
 
     public void setRank(String name, UUID uuid, RankList rank, RankList permission) {
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
         customPlayer.getRankData().setRank(rank);
         customPlayer.getRankData().setPermission(permission.getPermission());
         customPlayer.getRankData().setStyleCode(rank.getStyleCode());
@@ -110,7 +109,7 @@ public class RankManager {
         customPlayer.getRankData().setChatStyleCode(rank.getChatStyleCode());
         customPlayer.getRankData().setOrder(permission.getOrder());
         if (customPlayer.isOnline())
-            persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+            persistanceManager.getPlayerManager().commit(customPlayer);
         else persistanceManager.getPlayerManager().update(customPlayer);
         Player player = Bukkit.getPlayer(name);
         if (customPlayer.isOnline() && player != null)
@@ -129,7 +128,7 @@ public class RankManager {
             customPlayer.getRankData().setChatStyleCode(chat);
         if (order < 0)
             customPlayer.getRankData().setOrder(order);
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+        persistanceManager.getPlayerManager().commit(customPlayer);
     }
 
     public boolean isOrder(int order) {

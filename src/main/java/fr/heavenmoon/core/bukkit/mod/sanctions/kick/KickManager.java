@@ -6,7 +6,6 @@ import fr.heavenmoon.core.bukkit.utils.BUniqueID;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisPublisher;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
 import org.bukkit.ChatColor;
@@ -33,9 +32,8 @@ public class KickManager
 		if (sender instanceof Player)
 		{
 			UUID uuid = BUniqueID.get(name);
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
-			CustomPlayer customModerator = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-                    ((Player) sender).getUniqueId());
+			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
+			CustomPlayer customModerator = persistanceManager.getPlayerManager().getCustomPlayer(((Player) sender).getUniqueId());
 			if (!customPlayer.isOnline())
 			{
 				new Message(PrefixType.ERROR, "Ce joueur n'est pas en ligne.").send(sender);

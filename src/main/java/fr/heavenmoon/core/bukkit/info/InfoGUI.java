@@ -10,7 +10,6 @@ import fr.heavenmoon.core.common.utils.builders.items.ItemBuilder;
 import fr.heavenmoon.core.common.utils.time.CustomDate;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -37,7 +36,7 @@ public class InfoGUI extends AbstractGui
 	{
 		this.inventory = plugin.getServer().createInventory(null, 54, "Infos : " + targetName);
 		UUID uuid = BUniqueID.get(targetName);
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 		setSlotData(ChatColor.getByChar(customPlayer.getRankData().getChatStyleCode()) + customPlayer.getName(),
 				new HeadBuilder().setOwner(customPlayer.getName()).build(), 13, makePlayerItemsLore(customPlayer), null);
 		setSlotData(ChatColor.GOLD + "Caractéristiques", Material.NETHER_STAR, 20, makePlayerStatsLore(customPlayer), null);
@@ -137,7 +136,7 @@ public class InfoGUI extends AbstractGui
 				(ChatColor.RED +
 				"Non")));
 		lore.add(ChatColor.GRAY + "Réduit au silence: " +
-				(persistanceManager.getSanctionManager().isMuted(RedisKey.MUTE, customPlayer) ? (ChatColor.GREEN + "Oui") : (ChatColor.RED + "Non")));
+				(persistanceManager.getSanctionManager().isMuted(customPlayer) ? (ChatColor.GREEN + "Oui") : (ChatColor.RED + "Non")));
 		return lore.toArray(loreArray);
 	}
 	

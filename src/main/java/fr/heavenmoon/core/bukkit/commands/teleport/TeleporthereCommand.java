@@ -6,7 +6,6 @@ import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.core.common.format.message.MessageType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,7 +33,7 @@ public class TeleporthereCommand implements CommandExecutor
 			return false;
 		}
 		Player player = (Player) sender;
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		if (!customPlayer.hasPermission(this.rank))
 		{
 			(new Message(MessageType.PERMISSION, "%rank%", this.rank.getName())).send(sender);

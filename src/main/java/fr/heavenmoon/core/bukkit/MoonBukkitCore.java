@@ -27,16 +27,24 @@ import fr.heavenmoon.core.common.format.message.MessageType;
 import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.core.common.logger.LoggerAdapter;
 import fr.heavenmoon.core.common.logger.MoonLogger;
+import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
 import fr.heavenmoon.core.common.utils.CommandBlocker;
+import fr.heavenmoon.persistanceapi.customs.server.CustomServer;
+import fr.heavenmoon.persistanceapi.customs.server.ServerStatus;
+import fr.heavenmoon.persistanceapi.customs.server.ServerType;
+import fr.heavenmoon.persistanceapi.customs.server.ServerWhitelist;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.redisson.api.listener.MessageListener;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +56,9 @@ public class MoonBukkitCore extends JavaPlugin implements MoonPlatform {
     private static MoonBukkitCore INSTANCE;
 
     private final MoonCommons commons = new MoonCommons(this);
+    
+    private RedisTarget redisTarget;
+    
     private MoonLogger moonLogger;
 
     private ScheduledExecutorService executorMonoThread;
@@ -82,10 +93,31 @@ public class MoonBukkitCore extends JavaPlugin implements MoonPlatform {
     @Override
     public void onEnable() {
         INSTANCE = this;
+        this.redisTarget = new RedisTarget(RedisTarget.RedisTargetType.SERVER);
         commons.init(RedisTarget.RedisTargetType.SERVER);
-
+        CustomServer customServer = null;
+        if (!this.commons.getPersistanceManager().getServerManager().exist(this.commons.getConfig().getServerName()))
+        {
+            this.commons.getLogger().info("Serveur not exist, processing...");
+            customServer =
+                    new CustomServer(this.commons.getConfig().getServerName(), this.commons.getPlatform().getHost(),
+                            ServerType.getByName(this.commons.getConfig().getServerType()), ServerStatus.STARTING,
+                            ServerWhitelist.getByName(this.commons.getConfig().getServerWhitelist()), 0);
+            this.commons.getPersistanceManager().getServerManager().add(customServer);
+            this.commons.getLogger().info("Done");
+        }
+        else
+        {
+            customServer = this.commons.getPersistanceManager().getServerManager().getCustomServer(this.commons.getConfig().getServerName());
+            customServer.setStatus(ServerStatus.STARTING);
+            this.commons.getPersistanceManager().getServerManager()
+                        .commit( customServer);
+            this.commons.getPersistanceManager().getServerManager().update(customServer);
+        }
+        
         commons.getLogger().info("Enabling Bukkit Core ...");
-
+        commons.getLogger().info("Loading bukkit core managers...");
+        
         scheduledExecutorService = Executors.newScheduledThreadPool(16);
         executorMonoThread = Executors.newScheduledThreadPool(1);
 
@@ -109,13 +141,21 @@ public class MoonBukkitCore extends JavaPlugin implements MoonPlatform {
         guildManager = new GuildManager(this);
         commons.getLogger().info("Bukkit core managers successfully loaded !");
 
-        for (RankList rank : RankList.values()) {
-            teams.add(new ScoreboardTeam("" + rank.getOrder(), ChatColor.getByChar(rank.getStyleCode()) + rank.getPrefix()));
-        }
-
-        commons.getLogger().info("Loading bukkit action !");
-        new Action(this);
-        commons.getLogger().info("Action successfully loaded !");
+//        for (RankList rank : RankList.values()) {
+//            teams.add(new ScoreboardTeam("" + rank.getOrder(), ChatColor.getByChar(rank.getStyleCode()) + rank.getPrefix()));
+//        }
+        this.commons.getLogger().info("Loading bukkit action !");
+        Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) this, new Runnable()
+        {
+            public void run()
+            {
+                new Action(MoonBukkitCore.get());
+                MoonBukkitCore.this.commons.getLogger().info("Action successfully loaded !");
+            }
+        }, 40L);
+        customServer.setStatus(ServerStatus.STARTED);
+        this.commons.getPersistanceManager().getServerManager().commit(customServer);
+        this.commons.getPersistanceManager().getServerManager().update(customServer);
 
         CommandBlocker.removeCommands();
 
@@ -126,13 +166,24 @@ public class MoonBukkitCore extends JavaPlugin implements MoonPlatform {
     @Override
     public void onDisable() {
         commons.getLogger().info("Disabling Bukkit Core...");
-
+        CustomServer server =
+                this.commons.getPersistanceManager().getServerManager().getCustomServer(this.commons.getConfig().getServerName());
+        server.setStatus(ServerStatus.STOPED);
+        server.setOnline(0);
+        this.commons.getPersistanceManager().getServerManager().update(server);
+        this.commons.getPersistanceManager().getServerManager().remove(server);
         Bukkit.getOnlinePlayers().forEach(p -> p.kickPlayer(ChatColor.RED + "Le serveur est éteint !"));
 
         scoreboardManager.onDisable();
-
-        commons.getLogger().info("Disabling Core successful !");
-        commons.shutdown();
+    
+        for (Player player : Bukkit.getOnlinePlayers())
+        {
+            CustomPlayer customPlayer = this.commons.getPersistanceManager().getPlayerManager().getCustomPlayer(player.getUniqueId());
+            this.commons.getPersistanceManager().getPlayerManager().update(customPlayer);
+        }
+        
+        this.commons.getLogger().info("Disabling Core successful !");
+        this.commons.shutdown();
 
         super.onDisable();
     }
@@ -241,7 +292,7 @@ public class MoonBukkitCore extends JavaPlugin implements MoonPlatform {
     }
 
     @Override
-    public String getPlatformName() { return commons.getServerName(); }
+    public String getPlatformName() { return commons.getConfig().getServerName(); }
 
     @Override
     public String getPlatformVersion() {
@@ -257,7 +308,19 @@ public class MoonBukkitCore extends JavaPlugin implements MoonPlatform {
     public Path getDataDirectory() {
         return getDataFolder().toPath();
     }
-
+    
+    public String getHost()
+    {
+        try
+        {
+            return Inet4Address.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
     @Override
     public int getMaxPlayers() {
         return Bukkit.getMaxPlayers();

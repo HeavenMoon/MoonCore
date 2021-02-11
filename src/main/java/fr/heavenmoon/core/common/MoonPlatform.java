@@ -21,7 +21,9 @@ public interface MoonPlatform {
     String getPluginVersion();
 
     Path getDataDirectory();
-
+    
+    String getHost();
+    
     int getMaxPlayers();
 
     default void executeSync(Runnable runnable) {

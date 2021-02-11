@@ -81,7 +81,7 @@ public class ScoreboardManager
 		if (scoreboards.containsKey(player.getUniqueId()))
 		{
 			scoreboards.get(player.getUniqueId()).reloadData();
-			scoreboards.get(player.getUniqueId()).refreshTeams();
+			//scoreboards.get(player.getUniqueId()).refreshTeams();
 		}
 	}
 	

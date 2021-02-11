@@ -8,7 +8,6 @@ import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.core.common.format.message.MessageType;
 import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.core.common.utils.math.MathUtils;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -36,8 +35,8 @@ public class TeleportCommand implements CommandExecutor
 			return false;
 		}
 		Player player = (Player) sender;
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
-		if (!customPlayer.hasOnlyPermission(this.rank))
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+		if (!customPlayer.hasPermission(this.rank))
 		{
 			new Message(MessageType.PERMISSION, "%rank%", this.rank.getName()).send(sender);
 			return false;

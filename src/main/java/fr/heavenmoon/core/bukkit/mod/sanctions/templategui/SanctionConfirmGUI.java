@@ -8,7 +8,6 @@ import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.utils.builders.items.HeadBuilder;
 import fr.heavenmoon.core.common.utils.builders.items.ItemBuilder;
 import fr.heavenmoon.persistanceapi.customs.player.SanctionType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -36,7 +35,7 @@ public class SanctionConfirmGUI extends AbstractGui
 		
 		this.inventory = plugin.getServer().createInventory(null, 9 * 5, "Confirmation");
 		UUID uuid = BUniqueID.get(targetName);
-		CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+		CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 		
 		setSlotData(customTarget.getName(),
 				new HeadBuilder().setOwner(customTarget.getName()).setName(ChatColor.AQUA + customTarget.getName()).build(), 0,

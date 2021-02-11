@@ -11,7 +11,6 @@ import fr.heavenmoon.core.common.utils.builders.items.HeadBuilder;
 import fr.heavenmoon.core.common.utils.builders.items.ItemBuilder;
 import fr.heavenmoon.core.common.utils.time.CustomDate;
 import fr.heavenmoon.core.common.utils.wrappers.LambdaWrapper;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import net.md_5.bungee.protocol.packet.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -37,7 +36,7 @@ public class AltsGUI extends AbstractGui {
     public void display(Player player) {
         this.inventory = plugin.getServer().createInventory(null, 54, "Alts > " + targetName);
         UUID uuid = BUniqueID.get(targetName);
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
         if (this.targetName.matches("^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})){3}$")) {
             alts = plugin.getAltsManager().getAlts(targetName);
         } else {
@@ -46,7 +45,7 @@ public class AltsGUI extends AbstractGui {
         LambdaWrapper<Integer> slot = new LambdaWrapper(0);
         alts.keySet().forEach(alt -> {
             UUID auuid = BUniqueID.get(alt);
-            CustomPlayer altPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, auuid);
+            CustomPlayer altPlayer = persistanceManager.getPlayerManager().getCustomPlayer(auuid);
             setSlotData(ChatColor.getByChar(altPlayer.getRankData().getStyleCode()) + altPlayer.getRankData().getRank().getPrefix() + altPlayer.getName(),
                     new HeadBuilder().setOwner(altPlayer.getName()).build(), slot.getData(), makePlayerAltLore(altPlayer, alt), "" + altPlayer.getName());
             slot.setData(slot.getData() + 1);
@@ -76,7 +75,7 @@ public class AltsGUI extends AbstractGui {
         lore.add("");
         lore.add(ChatColor.GRAY + "Banni: " + (persistanceManager.getSanctionManager().isBanned(altPlayer) ? (ChatColor.GREEN + "Oui") :
                 (ChatColor.RED + "Non")));
-        lore.add(ChatColor.GRAY + "Réduit au silence: " + (persistanceManager.getSanctionManager().isMuted(RedisKey.PLAYER, altPlayer) ?
+        lore.add(ChatColor.GRAY + "Réduit au silence: " + (persistanceManager.getSanctionManager().isMuted(altPlayer) ?
                 (ChatColor.GREEN + "Oui") : (ChatColor.RED + "Non")));
         lore.add("");
         lore.add(ChatColor.GRAY + "Inscription: " + ChatColor.YELLOW + (new CustomDate(altPlayer.getFirstLogin())).getCompleteFormat());

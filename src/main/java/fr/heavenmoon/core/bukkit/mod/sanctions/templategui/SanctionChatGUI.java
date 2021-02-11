@@ -10,7 +10,6 @@ import fr.heavenmoon.core.common.utils.builders.items.HeadBuilder;
 import fr.heavenmoon.core.common.utils.builders.items.ItemBuilder;
 import fr.heavenmoon.core.common.utils.wrappers.LambdaWrapper;
 import fr.heavenmoon.persistanceapi.customs.player.SanctionType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -31,7 +30,7 @@ public class SanctionChatGUI extends AbstractGui {
     public void display(Player player) {
         this.inventory = plugin.getServer().createInventory(null, 54, "Infraction au chat");
         UUID uuid = BUniqueID.get(targetName);
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 
         LambdaWrapper<Integer> slot = new LambdaWrapper(18);
         setSlotData(customPlayer.getName(),

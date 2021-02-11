@@ -3,7 +3,6 @@ package fr.heavenmoon.core.bukkit.mod.bypass;
 import fr.heavenmoon.core.bukkit.MoonBukkitCore;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -22,7 +21,7 @@ public class BypassManager
 	
 	public void toggleBypass(Player player)
 	{
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		if (customPlayer.getModerationData().isBypass())
 		{
 			disableBypass(player);
@@ -37,15 +36,15 @@ public class BypassManager
 	
 	public void enableBypass(Player player)
 	{
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		customPlayer.getModerationData().setBypass(true);
-		persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+		persistanceManager.getPlayerManager().commit(customPlayer);
 	}
 	
 	public void disableBypass(Player player)
 	{
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		customPlayer.getModerationData().setBypass(false);
-		persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+		persistanceManager.getPlayerManager().commit(customPlayer);
 	}
 }

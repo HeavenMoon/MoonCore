@@ -6,7 +6,6 @@ import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.utils.NumberUtils;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -57,7 +56,7 @@ public class PersonalScoreboard
 	
 	public void reloadData()
 	{
-		this.customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, this.player.getUniqueId());
+		this.customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(this.player.getUniqueId());
 		this.rank = customPlayer.getRankData().getRank();
 		this.stars = customPlayer.getStars();
 		this.gemmes = customPlayer.getGemmes();
@@ -104,8 +103,7 @@ public class PersonalScoreboard
 			{
 				ScoreboardTeam team =
 						plugin.getSbTeam("" + Arrays.stream(RankList.values())
-						                            .filter(r -> persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-								                            p2.getUniqueId()).getRankData().getRank() == r).findAny()
+						                            .filter(r -> persistanceManager.getPlayerManager().getCustomPlayer(		                            p2.getUniqueId()).getRankData().getRank() == r).findAny()
 						                            .orElse(RankList.EXPLORATEUR).getOrder());
 				
 				if (team != null)

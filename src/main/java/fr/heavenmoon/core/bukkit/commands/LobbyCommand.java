@@ -6,7 +6,6 @@ import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisPublisher;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
 import org.bukkit.Bukkit;
@@ -33,7 +32,7 @@ public class LobbyCommand implements CommandExecutor
 		if (!(sender instanceof Player))
 			return false;
 		Player player = (Player) sender;
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		if (args.length == 0)
 		{
 			if (customPlayer.getServerName().equals("lobby01"))
@@ -42,7 +41,7 @@ public class LobbyCommand implements CommandExecutor
 				player.teleport(spawn);
 				return false;
 			}
-			if (customPlayer.hasOnlyPermission(RankList.MODERATEUR))
+			if (customPlayer.hasPermission(RankList.MODERATEUR))
 			{
 				new RedisPublisher(persistanceManager, "Connect").setArguments(customPlayer.getName(), "lobby01")
 				                                                  .publish(new RedisTarget(RedisTarget.RedisTargetType.PROXY));

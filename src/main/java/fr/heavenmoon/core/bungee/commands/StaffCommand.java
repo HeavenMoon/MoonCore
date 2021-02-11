@@ -8,7 +8,6 @@ import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -29,8 +28,7 @@ public class StaffCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
             ProxiedPlayer player = (ProxiedPlayer) sender;
-            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-                    ((ProxiedPlayer) sender).getUniqueId());
+            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(((ProxiedPlayer) sender).getUniqueId());
             if (!customPlayer.hasPermission(rank)) {
                 new Message(MessageType.PERMISSION, "%rank%", rank.getName()).send(sender);
                 return;
@@ -48,8 +46,7 @@ public class StaffCommand extends Command {
             ProxiedPlayer player = (ProxiedPlayer) sender;
 
             String message = ArrayUtils.getArgumentsMin(args, 0);
-            plugin.getStaffManager().sendStaffChatMessage(persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-                    player.getUniqueId()),
+            plugin.getStaffManager().sendStaffChatMessage(persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId()),
                     message);
         }
     }

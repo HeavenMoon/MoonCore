@@ -5,7 +5,6 @@ import fr.heavenmoon.core.bukkit.utils.BUniqueID;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.utils.time.CustomDate;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -29,7 +28,7 @@ public class SanctionsManager {
         
         UUID uuid = BUniqueID.get(target);
 
-        CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+        CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 
         switch (sanctionList.getSanction()) {
             case BAN:

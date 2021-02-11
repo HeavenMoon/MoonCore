@@ -8,7 +8,6 @@ import fr.heavenmoon.core.common.utils.builders.items.HeadBuilder;
 import fr.heavenmoon.core.common.utils.builders.items.ItemBuilder;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import net.md_5.bungee.protocol.packet.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -31,7 +30,7 @@ public class SanctionGUI extends AbstractGui {
         this.inventory = plugin.getServer().createInventory(null, 54, "Sanction : " + targetName);
 
         UUID uuid = BUniqueID.get(targetName);
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 
         setSlotData(customPlayer.getName(),
                 new HeadBuilder().setOwner(customPlayer.getName()).setName(ChatColor.AQUA + customPlayer.getName()).build(), 0,
@@ -44,7 +43,7 @@ public class SanctionGUI extends AbstractGui {
         for (int i = 9; i < 18; i++)
             setSlotData(ChatColor.BOLD + "Deco", deco, i, null, null);
 
-        if (persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId()).hasOnlyPermission(RankList.MODERATEUR)) {
+        if (persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId()).hasPermission(RankList.MODERATEUR)) {
             setSlotData(ChatColor.GOLD + "Infraction au chat", Material.BOOK_AND_QUILL, 29, new String[]{"", ChatColor.GRAY + "Cliquez pour sanctionner"}, "chat");
             setSlotData(ChatColor.GOLD + "Infraction au jeu (triche)", Material.DIAMOND_AXE, 31, new String[]{"", ChatColor.GRAY + "Cliquez pour sanctionner"}, "cheat");
             setSlotData(ChatColor.GOLD + "Infraction Autre", Material.QUARTZ, 33, new String[]{"", ChatColor.GRAY + "Cliquez pour sanctionner"}, "other");

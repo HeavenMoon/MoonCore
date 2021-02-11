@@ -9,7 +9,6 @@ import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.core.common.format.message.MessageType;
 import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.core.common.utils.math.MathUtils;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -41,7 +40,7 @@ public class StarsCommand implements CommandExecutor
 			String amount = args[2];
 			
 			UUID uuid = BUniqueID.get(targetName);
-			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 			if (customTarget == null)
 			{
 				new Message(PrefixType.ERROR, "Le joueur n'existe pas.").send(sender);
@@ -59,7 +58,7 @@ public class StarsCommand implements CommandExecutor
 			{
 				
 				customTarget.setStars(customTarget.getStars() + (int)stars);
-				persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customTarget);
+				persistanceManager.getPlayerManager().commit(customTarget);
 				Player targetPlayer = Bukkit.getPlayer(customTarget.getName());
 				if (targetPlayer != null)
 				{
@@ -77,7 +76,7 @@ public class StarsCommand implements CommandExecutor
 			else if (args[0].equalsIgnoreCase("remove"))
 			{
 				customTarget.setStars(customTarget.getStars() - (int)stars);
-				persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customTarget);
+				persistanceManager.getPlayerManager().commit(customTarget);
 				Player targetPlayer = Bukkit.getPlayer(customTarget.getName());
 				if (targetPlayer != null)
 				{

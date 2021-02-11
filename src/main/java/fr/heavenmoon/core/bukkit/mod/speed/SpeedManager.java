@@ -4,7 +4,6 @@ import fr.heavenmoon.core.bukkit.MoonBukkitCore;
 import fr.heavenmoon.core.bukkit.mod.ModItems;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.entity.Player;
 
 public class SpeedManager {
@@ -17,7 +16,7 @@ public class SpeedManager {
     }
 
     public void toggleSpeed(Player player) {
-        if (persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId()).getModerationData().isSpeed()) {
+        if (persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId()).getModerationData().isSpeed()) {
             disableSpeed(player);
         } else {
             enableSpeed(player);
@@ -25,9 +24,9 @@ public class SpeedManager {
     }
 
     public void enableSpeed(Player player) {
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         customPlayer.getModerationData().setSpeed(true);
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+        persistanceManager.getPlayerManager().commit(customPlayer);
         player.setFlySpeed(0.8F);
         player.setWalkSpeed(0.2F);
         if (customPlayer.getModerationData().isTools())
@@ -40,7 +39,7 @@ public class SpeedManager {
     }
 
     public void refreshSpeed(Player player) {
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         if (customPlayer.getModerationData().isSpeed()) {
             disableSpeed(player);
         } else {
@@ -49,9 +48,9 @@ public class SpeedManager {
     }
 
     public void disableSpeed(Player player) {
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         customPlayer.getModerationData().setSpeed(false);
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+        persistanceManager.getPlayerManager().commit(customPlayer);
         player.setFlySpeed(0.1F);
         player.setWalkSpeed(0.2F);
         if (customPlayer.getModerationData().isTools())

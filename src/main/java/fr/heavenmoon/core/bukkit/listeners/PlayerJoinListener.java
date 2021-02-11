@@ -8,7 +8,6 @@ import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.core.common.utils.builders.misc.TablistBuilder;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -30,7 +29,7 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void on(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         plugin.getVanishManager().refreshVanish(player);
         plugin.getSpeedManager().refreshSpeed(player);
 
@@ -57,7 +56,7 @@ public class PlayerJoinListener implements Listener {
         plugin.getSpeedManager().resetSpeed(player);
         player.setAllowFlight(customPlayer.getModerationData().isFly());
 
-        customPlayer.setServerName(plugin.getCommons().getServerName());
+        customPlayer.setServerName(plugin.getCommons().getConfig().getServerName());
         customPlayer.setOnline(true);
 
         if (customPlayer.hasPermission(RankList.MODERATEUR) && customPlayer.getModerationData().isEnable())
@@ -65,6 +64,6 @@ public class PlayerJoinListener implements Listener {
             else plugin.getVanishManager().disableVanish(player);
 
         player.setGameMode(GameMode.getByValue(customPlayer.getGamemode()));
-       persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+       persistanceManager.getPlayerManager().commit(customPlayer);
     }
 }

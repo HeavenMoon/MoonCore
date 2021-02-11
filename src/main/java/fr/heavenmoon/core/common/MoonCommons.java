@@ -2,8 +2,10 @@ package fr.heavenmoon.core.common;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.heavenmoon.core.common.config.PluginConfig;
 import fr.heavenmoon.core.common.logger.LoggerAdapter;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
+import fr.heavenmoon.persistanceapi.config.DatabaseConfig;
+import fr.heavenmoon.persistanceapi.config.RedisConfig;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
 import fr.heavenmoon.core.common.scheduler.ThreadFactoryBuilder;
 import fr.heavenmoon.persistanceapi.customs.server.CustomServer;
@@ -24,146 +26,230 @@ import java.io.*;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class MoonCommons {
-
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().name("moon-scheduler").daemon());
-
-    private final Gson gson = new Gson();
-    private final Gson gsonPrettyPrint = new GsonBuilder().setPrettyPrinting().create();
-
-    private final MoonPlatform platform;
-
-    private Path configFile;
-    private JSONObject joConfig;
-    private String config;
-    
-    private Path redisConfigFile;
-    private JSONObject joRedisConfig;
-    private String redisConfig;
-    
-    private String serverName;
-    
-    private PersistanceManager persistanceManager;
-
-    public MoonCommons(MoonPlatform platform) {
-        this.platform = platform;
-    }
-
-    public void init(RedisTarget.RedisTargetType serverType) {
-        configFile = platform.getDataDirectory().resolve("config.json");
-        redisConfigFile = platform.getDataDirectory().resolve("redisConfig.json");
-        
-        FileReader fileReader = null;
-        try
-        {
-            JSONParser jsonParser = new JSONParser();
-    
-            fileReader = new FileReader(configFile.toFile());
-            Object oConfig = jsonParser.parse(fileReader);
-            this.joConfig = (JSONObject) oConfig;
-            this.config = joConfig.toJSONString();
-            
-            fileReader = new FileReader(redisConfigFile.toFile());
-            Object oRedisConfig = jsonParser.parse(fileReader);
-            this.joRedisConfig = (JSONObject) oRedisConfig;
-            this.redisConfig = joRedisConfig.toJSONString();
-            
-            this.serverName = joConfig.get("server-name").toString();
-            this.persistanceManager = new PersistanceManager(config, redisConfig);
-            
-            if (!persistanceManager.getServerManager().exist(serverName))
-            {
-                System.out.println("No CustomServer found");
-                CustomServer customServer = new CustomServer(serverName, InetAddress.getLocalHost().getHostAddress(),
-                        ServerType.getByName((String) joConfig.get("type"))
-                        , ServerStatus.STARTING, ServerWhitelist.getByName((String) joConfig.get("whitelist")), 0);
-                persistanceManager.getServerManager().add(customServer);
-            }
-        }
-        catch (IOException | ParseException e)
-        {
-            e.printStackTrace();
-        }
-
-        RedissonClient redissonClient = persistanceManager.getRedisManager().getRedissonClient();
-        RTopic<String> rTopic = redissonClient.getTopic(serverType.getName());
-        rTopic.addListener(platform.getMessageEvent());
-        platform.getCommons().getLogger().info("PubSub registered !");
-    
-        CustomServer customServer = persistanceManager.getServerManager().getCustomServer(RedisKey.SERVER, serverName);
-        customServer.setStatus(ServerStatus.STARTED);
-        persistanceManager.getServerManager().commit(RedisKey.SERVER, customServer);
-        persistanceManager.getServerManager().update(customServer);
-    }
-
-    public void shutdown() {
-        platform.getCommons().getLogger().info("Shutting down commons...");
-        CustomServer customServer = persistanceManager.getServerManager().getCustomServer(RedisKey.SERVER, serverName);
-        customServer.setStatus(ServerStatus.STOPED);
-        persistanceManager.getServerManager().commit(RedisKey.SERVER, customServer);
-        persistanceManager.getServerManager().update(customServer);
-        persistanceManager.getServerManager().remove(RedisKey.SERVER, customServer);
-        try {
-            scheduler.awaitTermination(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            getLogger().warn("Error while shutting down scheduler", e);
-        }
-
-        platform.getCommons().getLogger().info("Success down commons !");
-    }
-
-    public void saveConfig() throws IOException {
-        if (!Files.isDirectory(platform.getDataDirectory())) {
-            Files.createDirectories(platform.getDataDirectory());
-        }
-
-        try (BufferedWriter writer = Files.newBufferedWriter(configFile)) {
-            gsonPrettyPrint.toJson(config, writer);
-        }
-    }
-    
-    public String getServerName()
-    {
-        return serverName;
-    }
-    
-    public PersistanceManager getPersistanceManager()
-    {
-        return persistanceManager;
-    }
-    
-    public JSONObject getJoConfig()
-    {
-        return joConfig;
-    }
-    
-    public JSONObject getJoRedisConfig()
-    {
-        return joRedisConfig;
-    }
-    
-    public LoggerAdapter getLogger() {
-        return platform.getMoonLogger();
-    }
-
-    public ScheduledExecutorService getScheduler() {
-        return scheduler;
-    }
-
-    public MoonPlatform getPlatform() {
-        return platform;
-    }
-
-    public Gson getGson() {
-        return gson;
-    }
-
-    public Gson getGsonPrettyPrint() {
-        return gsonPrettyPrint;
-    }
-
+public class MoonCommons
+{
+	private static MoonCommons instance;
+	
+	private final ScheduledExecutorService scheduler =
+			Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().name("moon-scheduler").daemon());
+	
+	private final Gson gson = new Gson();
+	private final Gson gsonPrettyPrint = new GsonBuilder().setPrettyPrinting().create();
+	
+	private final MoonPlatform platform;
+	
+	private Path configFile;
+	private PluginConfig config = new PluginConfig(null, null, null, null);
+	
+	private Path databaseConfigFile;
+	private DatabaseConfig databaseConfig =
+			new DatabaseConfig(null, null, 0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+	
+	private Path redisConfigFile;
+	private RedisConfig redisConfig = new RedisConfig(null, 0, null, null, null, null, null, null, null);
+	
+	private PersistanceManager persistanceManager;
+	
+	public MoonCommons(MoonPlatform platform)
+	{
+		instance = this;
+		this.platform = platform;
+	}
+	
+	public void init(RedisTarget.RedisTargetType serverType)
+	{
+		configFile = platform.getDataDirectory().resolve("config.json");
+		databaseConfigFile = platform.getDataDirectory().resolve("databaseConfig.json");
+		redisConfigFile = platform.getDataDirectory().resolve("redisConfig.json");
+		loadConfig();
+		loadDatabaseConfig();
+		loadRedisConfig();
+		
+		this.persistanceManager = new PersistanceManager(config.getServerName(), databaseConfig, redisConfig);
+	}
+	
+	private void loadConfig()
+	{
+		try (BufferedReader reader = Files.newBufferedReader(this.configFile))
+		{
+			this.config = this.gson.fromJson(reader, PluginConfig.class);
+			saveConfig();
+			this.platform.getCommons().getLogger().info("Config loaded !");
+		}
+		catch (IOException | NoSuchFieldError e)
+		{
+			try
+			{
+				saveConfig();
+			}
+			catch (IOException ex)
+			{
+				ex.printStackTrace();
+			}
+			getLogger().error("Error while loading configuration", e);
+			return;
+		}
+		if (!this.config.isValid())
+		{
+			getLogger().warn("Invalid configuration.");
+			return;
+		}
+	}
+	
+	public void loadDatabaseConfig()
+	{
+		try (BufferedReader reader = Files.newBufferedReader(this.databaseConfigFile))
+		{
+			this.databaseConfig = (DatabaseConfig) this.gson.fromJson(reader, DatabaseConfig.class);
+			saveDatabaseConfig();
+			this.platform.getCommons().getLogger().info("Database config loaded !");
+		}
+		catch (IOException | NoSuchFieldError e)
+		{
+			try
+			{
+				saveConfig();
+			}
+			catch (IOException ex)
+			{
+				ex.printStackTrace();
+			}
+			getLogger().error("Error while loading database configuration", e);
+			return;
+		}
+		if (!this.databaseConfig.isValid())
+		{
+			getLogger().warn("Invalid database configuration.");
+			return;
+		}
+	}
+	
+	public void loadRedisConfig()
+	{
+		try (BufferedReader reader = Files.newBufferedReader(this.redisConfigFile))
+		{
+			this.redisConfig = (RedisConfig) this.gson.fromJson(reader, RedisConfig.class);
+			saveRedisConfig();
+			this.platform.getCommons().getLogger().info("Redis config loaded !");
+		}
+		catch (IOException | NoSuchFieldError e)
+		{
+			try
+			{
+				saveConfig();
+			}
+			catch (IOException ex)
+			{
+				ex.printStackTrace();
+			}
+			getLogger().error("Error while loading redis configuration", e);
+			return;
+		}
+		if (!this.redisConfig.isValid())
+		{
+			getLogger().warn("Invalid redis configuration.");
+			return;
+		}
+		
+	}
+	
+	public void saveConfig() throws IOException
+	{
+		if (!Files.isDirectory(this.platform.getDataDirectory(), new java.nio.file.LinkOption[0]))
+			Files.createDirectories(this.platform.getDataDirectory(), (FileAttribute<?>[]) new FileAttribute[0]);
+		try (BufferedWriter writer = Files.newBufferedWriter(this.configFile, new java.nio.file.OpenOption[0]))
+		{
+			this.gsonPrettyPrint.toJson(this.config, writer);
+		}
+	}
+	
+	public void saveDatabaseConfig() throws IOException
+	{
+		if (!Files.isDirectory(this.platform.getDataDirectory(), new java.nio.file.LinkOption[0]))
+			Files.createDirectories(this.platform.getDataDirectory(), (FileAttribute<?>[]) new FileAttribute[0]);
+		try (BufferedWriter writer = Files.newBufferedWriter(this.databaseConfigFile, new java.nio.file.OpenOption[0]))
+		{
+			this.gsonPrettyPrint.toJson(this.databaseConfig, writer);
+		}
+	}
+	
+	public void saveRedisConfig() throws IOException
+	{
+		if (!Files.isDirectory(this.platform.getDataDirectory(), new java.nio.file.LinkOption[0]))
+			Files.createDirectories(this.platform.getDataDirectory(), (FileAttribute<?>[]) new FileAttribute[0]);
+		try (BufferedWriter writer = Files.newBufferedWriter(this.redisConfigFile, new java.nio.file.OpenOption[0]))
+		{
+			this.gsonPrettyPrint.toJson(this.redisConfig, writer);
+		}
+	}
+	
+	public void shutdown()
+	{
+		this.platform.getCommons().getLogger().info("Shutting down commons...");
+		try
+		{
+			this.scheduler.awaitTermination(5L, TimeUnit.SECONDS);
+		}
+		catch (InterruptedException e)
+		{
+			getLogger().warn("Error while shutting down scheduler", e);
+		}
+		persistanceManager.shutdown();
+		this.platform.getCommons().getLogger().info("Success down commons !");
+	}
+	
+	public static MoonCommons get()
+	{
+		return instance;
+	}
+	
+	public LoggerAdapter getLogger()
+	{
+		return platform.getMoonLogger();
+	}
+	
+	public ScheduledExecutorService getScheduler()
+	{
+		return scheduler;
+	}
+	
+	public PluginConfig getConfig()
+	{
+		return this.config;
+	}
+	
+	public DatabaseConfig getDatabaseConfig()
+	{
+		return this.databaseConfig;
+	}
+	
+	public RedisConfig getRedisConfig()
+	{
+		return this.redisConfig;
+	}
+	
+	public MoonPlatform getPlatform()
+	{
+		return platform;
+	}
+	
+	public Gson getGson()
+	{
+		return gson;
+	}
+	
+	public Gson getGsonPrettyPrint()
+	{
+		return gsonPrettyPrint;
+	}
+	
+	public PersistanceManager getPersistanceManager()
+	{
+		return persistanceManager;
+	}
 }

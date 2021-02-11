@@ -5,7 +5,6 @@ import fr.heavenmoon.core.bukkit.format.Message;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,7 +33,7 @@ public class FreezeListener implements Listener
 	public void on(PlayerQuitEvent event)
 	{
 		Player player = event.getPlayer();
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		if (customPlayer.getModerationData().isFreeze())
 			player.damage(1000.0D);
 	}
@@ -45,7 +44,7 @@ public class FreezeListener implements Listener
 		if (!(event.getDamager() instanceof Player))
 			return;
 		Player damager = (Player) event.getDamager();
-		CustomPlayer customDamager = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, damager.getUniqueId());
+		CustomPlayer customDamager = persistanceManager.getPlayerManager().getCustomPlayer(damager.getUniqueId());
 		if (customDamager.getModerationData().isFreeze())
 			event.setCancelled(true);
 	}
@@ -56,7 +55,7 @@ public class FreezeListener implements Listener
 		if (!(event.getEntity() instanceof Player))
 			return;
 		Player player = (Player) event.getEntity();
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		if (customPlayer.getModerationData().isFreeze())
 		{
 			event.setDamage(0.0D);
@@ -68,7 +67,7 @@ public class FreezeListener implements Listener
 	public void on(PlayerMoveEvent event)
 	{
 		Player player = event.getPlayer();
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		if (customPlayer.getModerationData().isFreeze() && (
 				event.getFrom().getX() != event.getTo().getX() || event.getFrom().getY() != event.getTo().getY() ||
 						event.getFrom().getZ() != event.getTo().getZ()))
@@ -84,7 +83,7 @@ public class FreezeListener implements Listener
 	public void on(PlayerCommandPreprocessEvent event)
 	{
 		Player player = event.getPlayer();
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		String label = event.getMessage().substring(1);
 		if (label.equalsIgnoreCase("login"))
 			return;

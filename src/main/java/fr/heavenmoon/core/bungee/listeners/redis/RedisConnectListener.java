@@ -5,7 +5,6 @@ import fr.heavenmoon.core.bungee.format.Message;
 import fr.heavenmoon.core.common.MoonCommons;
 import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.persistanceapi.customs.redis.PubSubMessage;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.server.CustomServer;
@@ -42,9 +41,9 @@ public class RedisConnectListener
 		{
 			return;
 		}
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		String server = args.get(1);
-		CustomServer customServer = persistanceManager.getServerManager().getCustomServer(RedisKey.SERVER, server);
+		CustomServer customServer = persistanceManager.getServerManager().getCustomServer(server);
 		if (!customServer.getStatus().equals(ServerStatus.STARTED))
 		{
 			new Message(PrefixType.ERROR, "Le serveur est éteint").send(player);
@@ -54,12 +53,11 @@ public class RedisConnectListener
 			new Message(PrefixType.ERROR, "Tu es déjà connecté sur ce serveur.").send(player);
 			return;
 		}
-		if (customPlayer.getProxyName().equalsIgnoreCase(MoonBungeeCore.get().getCommons().getServerName()) &&
+		if (customPlayer.getProxyName().equalsIgnoreCase(MoonBungeeCore.get().getCommons().getConfig().getServerName()) &&
 				customPlayer.isOnline())
 		{
 			customPlayer.setServerName(server);
-			this.persistanceManager.getPlayerManager()
-			                       .commit(RedisKey.PLAYER, customPlayer);
+			this.persistanceManager.getPlayerManager().commit(customPlayer);
 			player.connect(ProxyServer.getInstance().getServerInfo(server));
 		}
 	}

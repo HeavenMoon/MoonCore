@@ -7,7 +7,6 @@ import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.core.common.format.message.MessageType;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -36,7 +35,7 @@ public class GuildCommand implements CommandExecutor
 			return false;
 		}
 		Player player = (Player) sender;
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		if (args.length == 0)
 		{
 			if (customPlayer.getGuild().getGuild() == null)
@@ -51,7 +50,7 @@ public class GuildCommand implements CommandExecutor
 		}
 		else if (args.length == 3)
 		{
-			if (!customPlayer.hasOnlyPermission(this.rank))
+			if (!customPlayer.hasPermission(this.rank))
 			{
 				(new Message(MessageType.PERMISSION)).send(player);
 				return false;

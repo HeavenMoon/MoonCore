@@ -11,7 +11,6 @@ import fr.heavenmoon.core.common.format.message.MessageType;
 import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.persistanceapi.customs.player.CustomSanction;
 import fr.heavenmoon.persistanceapi.customs.player.SanctionType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisPublisher;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
 import fr.heavenmoon.core.common.utils.math.MathUtils;
@@ -41,9 +40,8 @@ public class BanManager
 	public void banAdd(Player sender, String name, String reason, String time)
 	{
 		UUID uuid = BUniqueID.get(name);
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
-		CustomPlayer customModerator = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-				((Player) sender).getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
+		CustomPlayer customModerator = persistanceManager.getPlayerManager().getCustomPlayer(sender.getUniqueId());
 		if (persistanceManager.getSanctionManager().isBanned(customPlayer))
 		{
 			new Message(PrefixType.ERROR, "Ce joueur est déjà banni.").send(sender);
@@ -93,12 +91,12 @@ public class BanManager
 				new ArrayList<>(), customModerator.getUniqueID(), until, false, apply);
 		
 		customPlayer.getModerationData().setCurrentSanctionId(sanctionid.toString());
-		persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+		persistanceManager.getPlayerManager().commit(customPlayer);
 		
-		if (this.persistanceManager.getSanctionManager().applySanction(SanctionType.MUTE, customSanction, null))
+		if (this.persistanceManager.getSanctionManager().applySanction(SanctionType.MUTE, customSanction))
 		{
 			customPlayer.getModerationData().setCurrentSanctionId(sanctionid.toString());
-			persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+			persistanceManager.getPlayerManager().commit(customPlayer);
 			
 			new RedisPublisher(persistanceManager, "Sanction").setArguments("MuteAdd", customPlayer.getName(), reason, String.valueOf(apply),
 					String.valueOf(until)).publish(new RedisTarget(RedisTarget.RedisTargetType.PROXY));
@@ -121,18 +119,16 @@ public class BanManager
 		if (sender instanceof Player)
 		{
 			UUID uuid = BUniqueID.get(name);
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
-			CustomPlayer customModerator = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-					((Player) sender).getUniqueId());
+			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
+			CustomPlayer customModerator = persistanceManager.getPlayerManager().getCustomPlayer(((Player) sender).getUniqueId());
 			
 			if (!persistanceManager.getSanctionManager().isBanned(customPlayer))
 			{
 				new Message(PrefixType.ERROR, "Ce joueur n'est pas banni.").send(sender);
 				return;
 			}
-			CustomSanction customSanction = persistanceManager.getSanctionManager().getCurrentCustomSanction(RedisKey.MUTE, customPlayer);
-			CustomPlayer customPunisher = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-					customSanction.getPunisherUuid());
+			CustomSanction customSanction = persistanceManager.getSanctionManager().getCurrentCustomSanction(customPlayer);
+			CustomPlayer customPunisher = persistanceManager.getPlayerManager().getCustomPlayer(customSanction.getPunisherUuid());
 			if (customPunisher.getRankData().getPermission() > customModerator.getRankData().getPermission())
 			{
 				new Message(PrefixType.ERROR, "Vous ne pouvez pas dé-bannir ce joueur.").send(sender);
@@ -144,10 +140,10 @@ public class BanManager
 				return;
 			}
 			
-			persistanceManager.getSanctionManager().cancelSanction(customSanction, null, true);
+			persistanceManager.getSanctionManager().cancelSanction(customSanction, true);
 			
-			customPlayer.getModerationData().setCurrentSanctionId("0");
-			persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+			customPlayer.getModerationData().setCurrentSanctionId("null");
+			persistanceManager.getPlayerManager().commit(customPlayer);
 			
 			new Message(PrefixType.MODO,
 					"Le joueur " + ChatColor.GRAY + customPlayer.getName() + ChatColor.LIGHT_PURPLE + " a été dé-banni du serveur.")
@@ -158,15 +154,15 @@ public class BanManager
 	public void banRemove(String name)
 	{
 		UUID uuid = BUniqueID.get(name);
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
-		if (!persistanceManager.getSanctionManager().isMuted(RedisKey.MUTE, customPlayer)) return;
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
+		if (!persistanceManager.getSanctionManager().isMuted(customPlayer)) return;
 		
-		CustomSanction customSanction = persistanceManager.getSanctionManager().getCurrentCustomSanction(RedisKey.MUTE, customPlayer);
+		CustomSanction customSanction = persistanceManager.getSanctionManager().getCurrentCustomSanction(customPlayer);
 		
-		persistanceManager.getSanctionManager().cancelSanction(customSanction, null, false);
+		persistanceManager.getSanctionManager().cancelSanction(customSanction, false);
 		
-		customPlayer.getModerationData().setCurrentSanctionId("0");
-		persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+		customPlayer.getModerationData().setCurrentSanctionId("null");
+		persistanceManager.getPlayerManager().commit(customPlayer);
 	}
 	
 //	public void banStatus(CommandSender sender, String name)

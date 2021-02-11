@@ -6,7 +6,6 @@ import fr.heavenmoon.core.bukkit.utils.BUniqueID;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisPublisher;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
 import org.bukkit.Bukkit;
@@ -31,7 +30,7 @@ public class TeleportManager
 	public void globalTeleport(CustomPlayer customPlayer, String name)
 	{
 		UUID uuid = BUniqueID.get(name);
-		CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+		CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 		if (customTarget.isOnline())
 		{
 			Player target = Bukkit.getPlayer(customTarget.getName());
@@ -57,7 +56,7 @@ public class TeleportManager
 		Player player = Bukkit.getPlayer(customPlayer.getName());
 		if (player == null) return;
         UUID uuid = BUniqueID.get(name);
-		CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+		CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 		Player target = Bukkit.getPlayer(customTarget.getName());
 		if (target != null)
 		{
@@ -80,8 +79,8 @@ public class TeleportManager
 	{
 		UUID puuid = BUniqueID.get(name);
         UUID tuuid = BUniqueID.get(targetName);
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, puuid);
-		CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, tuuid);
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(puuid);
+		CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(tuuid);
 		Player player = Bukkit.getPlayer(name);
 		Player target = Bukkit.getPlayer(targetName);
 		if (player != null && target != null)
@@ -111,7 +110,7 @@ public class TeleportManager
 		Player player = Bukkit.getPlayer(name);
 		if (player != null)
 		{
-			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 			Location location = new Location(player.getWorld(), x, y, z);
 			player.teleport(location);
 			(new Message("avez ten " + x + " " + y + " " + z + ".")).send(player);
@@ -129,7 +128,7 @@ public class TeleportManager
 	public void teleportHere(CustomPlayer customPlayer, String targetName)
 	{
         UUID uuid = BUniqueID.get(targetName);
-		CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+		CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 		Player player = Bukkit.getPlayer(customPlayer.getName());
 		Player target = Bukkit.getPlayer(targetName);
 		if (target != null)

@@ -1,7 +1,6 @@
 package fr.heavenmoon.core.bungee.utils;
 
 import fr.heavenmoon.core.bungee.MoonBungeeCore;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.utils.time.CustomDate;
@@ -22,12 +21,12 @@ public class SanctionUtils {
     }
 
     public void banRemove(String name, UUID uuid) {
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
         if (!persistanceManager.getSanctionManager().isBanned(customPlayer)) return;
 
-        customPlayer.getModerationData().setCurrentSanctionId("0");
+        customPlayer.getModerationData().setCurrentSanctionId("null");
     
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+        persistanceManager.getPlayerManager().commit(customPlayer);
     }
 
     public String getBanReason(String author, String reason, long apply, long until) {

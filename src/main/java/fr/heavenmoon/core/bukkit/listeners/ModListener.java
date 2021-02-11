@@ -6,7 +6,6 @@ import fr.heavenmoon.core.bukkit.mod.ModItems;
 import fr.heavenmoon.core.bukkit.mod.sanctions.templategui.SanctionGUI;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,7 +27,7 @@ public class ModListener implements Listener {
     @EventHandler
     public void on(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         if (customPlayer.getModerationData().isEnable() && customPlayer.getModerationData().isTools())
             player.getInventory().clear();
     }
@@ -36,7 +35,7 @@ public class ModListener implements Listener {
     @EventHandler
     public void on(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         if (customPlayer.getModerationData().isEnable() && customPlayer.getModerationData().isTools())
             event.setCancelled(true);
     }
@@ -44,7 +43,7 @@ public class ModListener implements Listener {
     @EventHandler
     public void on(PlayerPickupItemEvent event) {
         Player player = event.getPlayer();
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         if (customPlayer.getModerationData().isTools())
             event.setCancelled(true);
     }
@@ -53,7 +52,7 @@ public class ModListener implements Listener {
     public void on(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
             if (customPlayer.getModerationData().isEnable())
                 event.setCancelled(true);
         }
@@ -62,7 +61,7 @@ public class ModListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void on(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         if (customPlayer.getModerationData().isEnable()) {
             event.setKeepInventory(true);
             event.setDroppedExp(0);
@@ -73,7 +72,7 @@ public class ModListener implements Listener {
     public void on(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
             Player damager = (Player) event.getDamager();
-            CustomPlayer customDamager = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, damager.getUniqueId());
+            CustomPlayer customDamager = persistanceManager.getPlayerManager().getCustomPlayer(damager.getUniqueId());
             if (customDamager.getModerationData().isEnable()) {
                 if (event.isCancelled())
                     event.setCancelled(false);
@@ -86,7 +85,7 @@ public class ModListener implements Listener {
     public void on(FoodLevelChangeEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
             if (customPlayer.getModerationData().isEnable())
                 event.setCancelled(true);
         }
@@ -98,7 +97,7 @@ public class ModListener implements Listener {
             return;
 
         Player player = event.getPlayer();
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         if (!customPlayer.getModerationData().isEnable()) return;
         if (event.getItem() == null || event.getItem().getType() == Material.AIR)
             return;
@@ -132,7 +131,7 @@ public class ModListener implements Listener {
             return;
         Player player = event.getPlayer();
         Player target = (Player) event.getRightClicked();
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         if (!customPlayer.getModerationData().isEnable())
             return;
         if (!customPlayer.getModerationData().isTools())
@@ -152,7 +151,7 @@ public class ModListener implements Listener {
     public void on(EntityTargetEvent event) {
         if (event.getTarget() instanceof Player) {
             Player player = (Player) event.getTarget();
-            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
             if (customPlayer.getModerationData().isVanish())
                 event.setCancelled(true);
         }

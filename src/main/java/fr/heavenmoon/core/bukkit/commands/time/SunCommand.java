@@ -6,7 +6,6 @@ import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.core.common.format.message.MessageType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,8 +29,7 @@ public class SunCommand implements CommandExecutor
 	{
 		if (sender instanceof Player)
 		{
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-					((Player) sender).getUniqueId());
+			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(((Player) sender).getUniqueId());
 			if (!customPlayer.hasPermission(this.rank))
 			{
 				new Message(MessageType.PERMISSION).send(sender);

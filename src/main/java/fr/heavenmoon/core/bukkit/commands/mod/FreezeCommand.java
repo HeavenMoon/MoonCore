@@ -7,7 +7,6 @@ import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.core.common.format.message.MessageType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,8 +33,8 @@ public class FreezeCommand implements CommandExecutor
 		if (sender instanceof Player)
 		{
 			Player player = (Player) sender;
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
-			if (!customPlayer.hasOnlyPermission(this.rank))
+			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+			if (!customPlayer.hasPermission(this.rank))
 			{
 				new Message(MessageType.PERMISSION, "%rank%", this.rank.getName()).send(sender);
 				return false;
@@ -45,7 +44,7 @@ public class FreezeCommand implements CommandExecutor
 		{
 			String name = args[0];
 			UUID uuid = BUniqueID.get(name);
-			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 			plugin.getFreezeManager().toggleFreeze(sender, customTarget);
 		}
 		else

@@ -7,7 +7,6 @@ import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.core.common.format.message.MessageType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -38,8 +37,8 @@ public class ClearCommand implements CommandExecutor
 			return false;
 		}
 		Player player = (Player) sender;
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
-		if (!customPlayer.hasOnlyPermission(this.rank))
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+		if (!customPlayer.hasPermission(this.rank))
 		{
 			(new Message(MessageType.PERMISSION, "%rank%", this.rank.getName())).send(sender);
 			return false;
@@ -51,7 +50,7 @@ public class ClearCommand implements CommandExecutor
 		}
 		else if (args.length == 1)
 		{
-			if (!customPlayer.hasOnlyPermission(this.max_rank))
+			if (!customPlayer.hasPermission(this.max_rank))
 			{
 				(new Message(MessageType.PERMISSION, "%rank%", this.rank.getName())).send(sender);
 				return false;
@@ -60,8 +59,7 @@ public class ClearCommand implements CommandExecutor
 			Player target = Bukkit.getPlayer(name);
 			if (target != null)
 			{
-				CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-                        target.getUniqueId());
+				CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(    target.getUniqueId());
 				target.getInventory().clear();
 				new ActionbarBuilder(
 						ChatColor.GRAY + "Le joueur " + ChatColor.getByChar(customTarget.getRankData().getStyleCode()) +

@@ -8,7 +8,6 @@ import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.format.message.MessageType;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -34,8 +33,8 @@ private final PersistanceManager persistanceManager;
             return false;
         }
         Player player = (Player) sender;
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
-        if (!customPlayer.hasOnlyPermission(this.rank)) {
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+        if (!customPlayer.hasPermission(this.rank)) {
             new Message(MessageType.PERMISSION, "%rank%", this.rank.getName()).send(sender);
             return false;
         }
@@ -43,7 +42,7 @@ private final PersistanceManager persistanceManager;
             String name = args[0];
             Player target = Bukkit.getPlayer(name);
             if (target != null) {
-                CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, target.getUniqueId());
+                CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(target.getUniqueId());
                 target.getInventory().setArmorContents(null);
                 new ActionbarBuilder(ChatColor.GRAY + "Le joueur " + ChatColor.getByChar(customTarget.getRankData().getStyleCode()) + customTarget.getRankData().getPrefix() + customTarget.getName() + ChatColor.GRAY + " n'a plus d'armure.", 4).send(player);
             } else {

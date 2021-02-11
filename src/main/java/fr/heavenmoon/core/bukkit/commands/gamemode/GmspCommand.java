@@ -6,7 +6,6 @@ import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.core.common.format.message.MessageType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -37,8 +36,8 @@ public class GmspCommand implements CommandExecutor
 			return false;
 		}
 		Player player = (Player) sender;
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
-		if (!customPlayer.hasOnlyPermission(this.rank))
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+		if (!customPlayer.hasPermission(this.rank))
 		{
 			new Message(MessageType.PERMISSION).send(sender);
 			return false;
@@ -46,7 +45,7 @@ public class GmspCommand implements CommandExecutor
 		if (args.length == 0)
 		{
 			customPlayer.setGamemode(Integer.valueOf(3));
-			persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+			persistanceManager.getPlayerManager().commit(customPlayer);
 			player.setGameMode(GameMode.SPECTATOR);
 			new Message(ChatColor.GRAY + "GameMode mis jour: " + ChatColor.GREEN + "SPECTATOR").send(player);
 			return true;
@@ -54,7 +53,7 @@ public class GmspCommand implements CommandExecutor
 		if (args.length == 1)
 		{
 			String name = args[0];
-			if (!customPlayer.hasOnlyPermission(this.max_rank))
+			if (!customPlayer.hasPermission(this.max_rank))
 			{
 				new Message(MessageType.PERMISSION).send(sender);
 				return false;
@@ -65,9 +64,9 @@ public class GmspCommand implements CommandExecutor
 				return false;
 			}
 			Player target = Bukkit.getPlayer(name);
-			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, target.getUniqueId());
+			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(target.getUniqueId());
 			customTarget.setGamemode(Integer.valueOf(3));
-            persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+            persistanceManager.getPlayerManager().commit(customPlayer);
 			target.setGameMode(GameMode.SPECTATOR);
 			new Message(ChatColor.GRAY + "GameMode mis jour: " + ChatColor.GREEN + "SPECTATOR").send(target);
 			new Message(ChatColor.GRAY + "GameMode mis jour pour " + ChatColor.DARK_GRAY + target.getName() + ChatColor.DARK_GRAY + ": " +

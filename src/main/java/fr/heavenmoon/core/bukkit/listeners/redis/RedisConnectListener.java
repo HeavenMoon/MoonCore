@@ -7,7 +7,6 @@ import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.redis.PubSubMessage;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import fr.heavenmoon.persistanceapi.customs.server.CustomServer;
 import fr.heavenmoon.persistanceapi.customs.server.ServerStatus;
 import net.md_5.bungee.api.ProxyServer;

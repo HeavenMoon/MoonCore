@@ -10,7 +10,6 @@ import fr.heavenmoon.core.common.utils.time.CustomDate;
 import fr.heavenmoon.persistanceapi.customs.player.CustomSanction;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -40,13 +39,13 @@ public class AsyncPlayerChatListener implements Listener
 	public void on(AsyncPlayerChatEvent event)
 	{
 		Player player = event.getPlayer();
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		String rankPrefix = ChatColor.getByChar(customPlayer.getRankData().getStyleCode()) + customPlayer.getRankData().getPrefix();
 		net.md_5.bungee.api.ChatColor chat = net.md_5.bungee.api.ChatColor.getByChar(customPlayer.getRankData().getChatStyleCode());
 		String message = event.getMessage().replace("<3", "❤");
-		if (persistanceManager.getSanctionManager().isMuted(RedisKey.MUTE, customPlayer))
+		if (persistanceManager.getSanctionManager().isMuted(customPlayer))
 		{
-            CustomSanction customSanction = persistanceManager.getSanctionManager().getCurrentCustomSanction(RedisKey.MUTE, customPlayer);
+            CustomSanction customSanction = persistanceManager.getSanctionManager().getCurrentCustomSanction(customPlayer);
 			long time = ((customSanction.getExpirationTime() - customSanction.getCreationTime()) / 60000);
 			
 			if (customSanction.isValid())
@@ -63,7 +62,7 @@ public class AsyncPlayerChatListener implements Listener
 				plugin.getMuteManager().muteRemove(customPlayer.getName());
 			}
 		}
-		if (customPlayer.hasOnlyPermission(RankList.ADMINISTRATEUR))
+		if (customPlayer.hasPermission(RankList.ADMINISTRATEUR))
 			message = ChatColor.translateAlternateColorCodes('&', message);
 		
 		//ChatFormat
@@ -84,7 +83,7 @@ public class AsyncPlayerChatListener implements Listener
 		TextComponent chatMessage = new TextComponent(message);
 		chatMessage.setColor(chat);
 		
-		if (!customPlayer.hasOnlyPermission(RankList.ADMINISTRATEUR))
+		if (!customPlayer.hasPermission(RankList.ADMINISTRATEUR))
 		{
 			chatFormat.addExtra(report);
 			chatFormat.addExtra(space);

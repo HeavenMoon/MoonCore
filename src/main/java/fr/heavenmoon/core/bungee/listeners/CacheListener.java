@@ -5,7 +5,6 @@ import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.address.CustomAddress;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.utils.UniqueID;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -39,7 +38,7 @@ public class CacheListener implements Listener {
             persistanceManager.getAddressManager().update(customAddress);
 
             //Load Player
-            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, UUID.fromString(uuid));
+            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(UUID.fromString(uuid));
             if (!customPlayer.isExist()) {
                 plugin.getCommons().getLogger().warn("The player does not exist !");
                 customPlayer.setExist(true);
@@ -49,7 +48,7 @@ public class CacheListener implements Listener {
             }
             customPlayer.setOnline(true);
             customPlayer.setServerName(null);
-            customPlayer.setProxyName(plugin.getCommons().getServerName());
+            customPlayer.setProxyName(plugin.getCommons().getConfig().getServerName());
             customPlayer.setLastLogin(System.currentTimeMillis());
             customPlayer.setLastIP(address);
             List<String> allAddress = customPlayer.getAllAddress();
@@ -57,7 +56,7 @@ public class CacheListener implements Listener {
                 allAddress.add(address);
             }
             customPlayer.setAllAddress(allAddress);
-           persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+           persistanceManager.getPlayerManager().commit(customPlayer);
             plugin.getCommons().getLogger().info("Player " + name + " registered with success !");
         });
     }
@@ -69,14 +68,14 @@ public class CacheListener implements Listener {
         UUID uuid = player.getUniqueId();
 
         plugin.getProxy().getScheduler().runAsync(plugin, () -> {
-            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
             if (customPlayer.getModerationData().isBypass()) customPlayer.getModerationData().setBypass(false);
             customPlayer.setOnline(false);
             customPlayer.setServerName(null);
-            persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+            persistanceManager.getPlayerManager().commit(customPlayer);
             persistanceManager.getPlayerManager().update(customPlayer);
             persistanceManager.getPlayerManager().removeFromCache(customPlayer);
-            persistanceManager.getPlayerManager().remove(RedisKey.PLAYER, customPlayer);
+            persistanceManager.getPlayerManager().remove(customPlayer);
         });
     }
 

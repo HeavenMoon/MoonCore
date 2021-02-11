@@ -5,7 +5,6 @@ import fr.heavenmoon.core.bungee.format.Message;
 import fr.heavenmoon.core.bungee.utils.SanctionUtils;
 import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.persistanceapi.customs.redis.PubSubMessage;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import net.md_5.bungee.api.ProxyServer;
@@ -44,8 +43,8 @@ public class RedisSanctionListener
 			Long apply = Long.valueOf(Long.parseLong(args.get(4)));
 			Long until = Long.valueOf(Long.parseLong(args.get(5)));
 			
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, UUID.fromString(uniqueId));
-			CustomPlayer customModerator = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, UUID.fromString(moderatorUniqueId));
+			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(UUID.fromString(uniqueId));
+			CustomPlayer customModerator = persistanceManager.getPlayerManager().getCustomPlayer(UUID.fromString(moderatorUniqueId));
 			
 			if (customPlayer.isOnline()) {
 				ProxiedPlayer player = ProxyServer.getInstance().getPlayer(customPlayer.getUniqueID());
@@ -54,13 +53,13 @@ public class RedisSanctionListener
 				String banMessage = MoonBungeeCore.get().getSanctionUtils().getBanReason(customModerator.getName(), reason, apply.longValue(),
 						until.longValue());
 				customPlayer.setOnline(false);
-				persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+				persistanceManager.getPlayerManager().commit(customPlayer);
 				player.disconnect(TextComponent.fromLegacyText(banMessage));
 				persistanceManager.getPlayerManager().update(customPlayer);
-				persistanceManager.getPlayerManager().remove(RedisKey.PLAYER, customPlayer);
+				persistanceManager.getPlayerManager().remove(customPlayer);
 			} else {
 				persistanceManager.getPlayerManager().update(customPlayer);
-				persistanceManager.getPlayerManager().remove(RedisKey.PLAYER, customPlayer);
+				persistanceManager.getPlayerManager().remove(customPlayer);
 			}
 		}
 		if (args.get(0).equalsIgnoreCase("MuteAdd")) {
@@ -71,7 +70,7 @@ public class RedisSanctionListener
 			Long apply = Long.valueOf(Long.parseLong(args.get(5)));
 			Long until = Long.valueOf(Long.parseLong(args.get(6)));
 			
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, UUID.fromString(uniqueId));
+			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(UUID.fromString(uniqueId));
 			
 			String muteMessage = ChatColor.RED + "Vous avez été réduit au silence pendant " + ChatColor.AQUA + time + " minute(s) " + ChatColor.RED + "pour " + ChatColor.AQUA + reason + ChatColor.RED + ".";
 			if (customPlayer.isOnline()) {
@@ -82,7 +81,7 @@ public class RedisSanctionListener
 			} else {
 				persistanceManager.getPlayerManager().update(customPlayer);
 				persistanceManager.getPlayerManager().removeFromCache(customPlayer);
-				persistanceManager.getPlayerManager().remove(RedisKey.PLAYER, customPlayer);
+				persistanceManager.getPlayerManager().remove(customPlayer);
 			}
 			return;
 		}
@@ -90,20 +89,20 @@ public class RedisSanctionListener
 			String uniqueId = args.get(1);
 			String moderatorUniqueId = args.get(2);
 			String reason = args.get(3);
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, UUID.fromString(uniqueId));
-			CustomPlayer customModerator = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, UUID.fromString(moderatorUniqueId));
+			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(UUID.fromString(uniqueId));
+			CustomPlayer customModerator = persistanceManager.getPlayerManager().getCustomPlayer(UUID.fromString(moderatorUniqueId));
 			if (customPlayer.isOnline()) {
 				ProxiedPlayer player = ProxyServer.getInstance().getPlayer(customPlayer.getUniqueID());
 				if (player == null)
 					return;
 				String kickMessage = MoonBungeeCore.get().getSanctionUtils().getKickReason(customModerator.getName(), reason);
 				customPlayer.setOnline(false);
-				persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+				persistanceManager.getPlayerManager().commit(customPlayer);
 				
 				player.disconnect(TextComponent.fromLegacyText(kickMessage));
 				persistanceManager.getPlayerManager().update(customPlayer);
 				persistanceManager.getPlayerManager().removeFromCache(customPlayer);
-				persistanceManager.getPlayerManager().remove(RedisKey.PLAYER, customPlayer);
+				persistanceManager.getPlayerManager().remove(customPlayer);
 			}
 			
 		}

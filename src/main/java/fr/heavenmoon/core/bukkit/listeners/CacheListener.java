@@ -6,7 +6,6 @@ import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -41,7 +40,7 @@ public class CacheListener implements Listener
 		plugin.executeAsync(() ->
 		{
 			Player player = event.getPlayer();
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 			String hostname = event.getHostname();
 			Matcher m = PACTIFY_HOSTNAME_PATTERN.matcher(hostname);
 			int launcherProtocolVersion;
@@ -61,7 +60,7 @@ public class CacheListener implements Listener
 			{
 				customPlayer.setAzlauncher(false);
 			}
-			persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+			persistanceManager.getPlayerManager().commit(customPlayer);
 		});
 	}
 	
@@ -69,7 +68,7 @@ public class CacheListener implements Listener
 	public void on(PlayerJoinEvent event)
 	{
 		Player player = event.getPlayer();
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		persistanceManager.getPlayerManager().cache(customPlayer);
 		if (customPlayer.getRankData().getRank() == RankList.ADMINISTRATEUR)
 			event.getPlayer().setOp(true);
@@ -87,7 +86,7 @@ public class CacheListener implements Listener
 	public void on(PlayerQuitEvent event)
 	{
 		Player player = event.getPlayer();
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		// Remove team from player
 		for (ScoreboardTeam team : plugin.getTeams())
 			(((CraftPlayer) event.getPlayer()).getHandle()).playerConnection.sendPacket(team.removeTeam());

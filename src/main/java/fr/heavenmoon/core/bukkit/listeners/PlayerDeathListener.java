@@ -3,7 +3,6 @@ package fr.heavenmoon.core.bukkit.listeners;
 import fr.heavenmoon.core.bukkit.MoonBukkitCore;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -73,7 +72,7 @@ public class PlayerDeathListener implements Listener {
                     event.setDeathMessage(ChatColor.GREEN + player.getName() + ChatColor.YELLOW + " est mort par un " + player.getLastDamageCause().getEntityType().name() + " ! " + ChatColor.GRAY + "[" + ChatColor.GREEN + Math.round(player.getKiller().getHealth()) + ChatColor.RED + "❤" + ChatColor.GRAY + "]");
                 } else {
                     Player killer = event.getEntity().getKiller();
-                    CustomPlayer customKiller = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, killer.getUniqueId());
+                    CustomPlayer customKiller = persistanceManager.getPlayerManager().getCustomPlayer(killer.getUniqueId());
                     if (customKiller.getModerationData().isVanish()) {
                         event.setDeathMessage(ChatColor.GREEN + player.getName() + ChatColor.YELLOW + " est mort !");
                     } else {

@@ -7,7 +7,6 @@ import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.core.common.format.message.MessageType;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -33,7 +32,7 @@ public class FlyCommand implements CommandExecutor
 	
 	public static void toggleFly(Player player)
 	{
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		
 		if (player.getAllowFlight())
 		{
@@ -47,14 +46,14 @@ public class FlyCommand implements CommandExecutor
 			customPlayer.getModerationData().setFly(true);
 			new Message(PrefixType.MODO, "Vous pouvez maintenant voler").send(player);
 		}
-		persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+		persistanceManager.getPlayerManager().commit(customPlayer);
 	}
 	
 	public static void toggleFly(Player player, String name)
 	{
 		Player target = Bukkit.getPlayer(name);
         if (target == null) return;
-        CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, target.getUniqueId());
+        CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(target.getUniqueId());
         if (target.getAllowFlight())
 		{
 			target.setAllowFlight(false);
@@ -69,7 +68,7 @@ public class FlyCommand implements CommandExecutor
 			new Message(PrefixType.MODO, ChatColor.GRAY + name + ChatColor.LIGHT_PURPLE + " peut maintenant voler.").send(player);
 			new Message(PrefixType.SERVER, "Vous pouvez maintenant voler").send(target);
 		}
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customTarget);
+        persistanceManager.getPlayerManager().commit(customTarget);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command command, String string, String[] args)
@@ -77,8 +76,8 @@ public class FlyCommand implements CommandExecutor
 		if (sender instanceof Player)
 		{
 			Player player = (Player) sender;
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
-			if (!customPlayer.hasOnlyPermission(this.rank))
+			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+			if (!customPlayer.hasPermission(this.rank))
 			{
 				new Message(MessageType.PERMISSION, "%rank%", this.rank.getName()).send(sender);
 				return false;
@@ -89,7 +88,7 @@ public class FlyCommand implements CommandExecutor
 			}
 			else if (args.length == 1)
 			{
-				if (!customPlayer.hasOnlyPermission(this.max_rank))
+				if (!customPlayer.hasPermission(this.max_rank))
 				{
 					(new Message(MessageType.PERMISSION)).send(player);
 					return false;

@@ -2,7 +2,6 @@ package fr.heavenmoon.core.bungee.staff;
 
 import fr.heavenmoon.core.bungee.MoonBungeeCore;
 import fr.heavenmoon.core.bungee.format.Message;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import net.md_5.bungee.api.ChatColor;
@@ -29,12 +28,10 @@ public class StaffManager {
         List<ProxiedPlayer> staffs = plugin.getProxy()
                                            .getPlayers()
                                            .stream()
-                                           .filter(p -> persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-                                                   p.getUniqueId()).getRankData().getOrder() >= 5).collect(Collectors.toList());
+                                           .filter(p -> persistanceManager.getPlayerManager().getCustomPlayer(                               p.getUniqueId()).getRankData().getOrder() >= 5).collect(Collectors.toList());
 
         staffs.forEach(staffPlayer -> {
-            CustomPlayer customStaff = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER,
-                    staffPlayer.getUniqueId());
+            CustomPlayer customStaff = persistanceManager.getPlayerManager().getCustomPlayer(staffPlayer.getUniqueId());
             new Message(ChatColor.getByChar(customStaff.getRankData().getStyleCode()) + customStaff.getRankData().getPrefix()
                     + staffPlayer.getName() + ChatColor.GRAY + " - " + customStaff.getServerName()).send(sender);
         });
@@ -42,7 +39,7 @@ public class StaffManager {
 
     public void sendStaffChatMessage(CustomPlayer customPlayer, String message) {
         plugin.getProxy().getPlayers().forEach(p -> {
-            if (persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, p.getUniqueId()).getRankData().getPermission() >= 60) {
+            if (persistanceManager.getPlayerManager().getCustomPlayer(p.getUniqueId()).getRankData().getPermission() >= 60) {
                 p.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "" + ChatColor.BOLD + "[STAFF] "
                         + ChatColor.getByChar(customPlayer.getRankData().getStyleCode()) + customPlayer.getRankData().getPrefix()
                         + customPlayer.getName() + ChatColor.GRAY + ": " + ChatColor.GREEN + message));

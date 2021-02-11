@@ -6,7 +6,6 @@ import fr.heavenmoon.core.bukkit.mod.ModItems;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -24,10 +23,10 @@ public class VanishManager {
     }
 
     public void refreshVanish(Player player) {
-        CustomPlayer moderator = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer moderator = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         plugin.getServer().getOnlinePlayers().forEach(current -> {
             if (player != current) {
-                CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, current.getUniqueId());
+                CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(current.getUniqueId());
                 if (customPlayer.getModerationData().isVanish()) {
                     if (moderator.getModerationData().isEnable()) {
                         if (customPlayer.getModerationData().isBypass()) {
@@ -50,7 +49,7 @@ public class VanishManager {
     }
 
     public void toggleVanish(Player player) {
-        if (persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId()).getModerationData().isVanish()) {
+        if (persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId()).getModerationData().isVanish()) {
             disableVanish(player);
         } else {
             enableVanish(player);
@@ -62,9 +61,9 @@ public class VanishManager {
     }
 
     public void enableVanish(Player player) {
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         customPlayer.getModerationData().setVanish(true);
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+        persistanceManager.getPlayerManager().commit(customPlayer);
         if (customPlayer.getModerationData().isTools())
             player.getInventory().setItem(6, ModItems.VANISHON.getContent());
         refreshVanish();
@@ -72,9 +71,9 @@ public class VanishManager {
     }
 
     public void disableVanish(Player player) {
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         customPlayer.getModerationData().setVanish(false);
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+        persistanceManager.getPlayerManager().commit(customPlayer);
         if (customPlayer.getModerationData().isTools())
             player.getInventory().setItem(6, ModItems.VANISHOFF.getContent());
         refreshVanish();

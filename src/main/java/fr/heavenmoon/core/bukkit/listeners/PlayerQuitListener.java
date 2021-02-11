@@ -3,7 +3,6 @@ package fr.heavenmoon.core.bukkit.listeners;
 import fr.heavenmoon.core.bukkit.MoonBukkitCore;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,7 +22,7 @@ public class PlayerQuitListener implements Listener {
     public void on(PlayerQuitEvent event) {
         
         Player player = event.getPlayer();
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         
         if (customPlayer.getModerationData().isEnable()) {
             event.setQuitMessage(null);
@@ -33,6 +32,6 @@ public class PlayerQuitListener implements Listener {
         
         long timePlayed = System.currentTimeMillis() / 1000L - customPlayer.getLastLogin() / 1000L;
         customPlayer.setTimePlayed(customPlayer.getTimePlayed() + timePlayed);
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+        persistanceManager.getPlayerManager().commit(customPlayer);
     }
 }

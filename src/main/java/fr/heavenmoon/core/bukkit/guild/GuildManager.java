@@ -8,7 +8,6 @@ import fr.heavenmoon.persistanceapi.customs.guild.GuildRankList;
 import fr.heavenmoon.persistanceapi.customs.guild.GuildUnit;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -30,7 +29,7 @@ public class GuildManager
 	public void setGuild(Player sender, String target, String guild)
 	{
         UUID uuid = BUniqueID.get(target);
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 		GuildUnit guildUnit = GuildUnit.getByName(guild);
 		if (guildUnit == null)
 		{
@@ -38,7 +37,7 @@ public class GuildManager
 			return;
 		}
 		customPlayer.getGuild().setGuild(guildUnit);
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+        persistanceManager.getPlayerManager().commit(customPlayer);
 		new Message(PrefixType.SERVER,
 				"La guild de " + ChatColor.DARK_GRAY + target + ChatColor.GRAY + " est maintenant " + ChatColor.BLUE + guildUnit.getName())
 				.send(sender);
@@ -47,7 +46,7 @@ public class GuildManager
 	public void setGuildRank(Player sender, String target, String guildRank)
 	{
         UUID uuid = BUniqueID.get(target);
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, uuid);
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 		GuildRankList rank = GuildRankList.getByName(guildRank);
 		if (rank == null)
 		{
@@ -55,7 +54,7 @@ public class GuildManager
 			return;
 		}
 		customPlayer.getGuild().setRank(rank);
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+        persistanceManager.getPlayerManager().commit(customPlayer);
 		new Message(PrefixType.SERVER,
 				"La rang de guild de " + ChatColor.DARK_GRAY + target + ChatColor.GRAY + " est maintenant " + rank.getStyle() +
 						rank.getName())

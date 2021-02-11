@@ -4,7 +4,6 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import fr.heavenmoon.core.bungee.MoonBungeeCore;
 import fr.heavenmoon.persistanceapi.customs.redis.PubSubMessage;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisPublisher;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
@@ -39,11 +38,11 @@ public class RedisTeleportListener
 			String playername = args.get(1);
 			String targetname = args.get(2);
 			ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playername);
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 			
 			if (redisBungeeAPI.getUuidFromName(targetname) == null) return;
 			
-			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, redisBungeeAPI.getUuidFromName(targetname));
+			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(redisBungeeAPI.getUuidFromName(targetname));
 			if (customPlayer.getServerName() != customTarget.getServerName())
 			{
 				player.connect(ProxyServer.getInstance().getServerInfo(customTarget.getServerName()));

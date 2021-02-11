@@ -5,7 +5,6 @@ import fr.heavenmoon.core.bukkit.format.Message;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -40,12 +39,12 @@ public class FreezeManager
 					+ ChatColor.LIGHT_PURPLE + " est maintenant freeze.").send(sender);
 			if (customPlayer.isOnline()) new Message(ChatColor.GRAY + "Vous êtes maintenant freeze.").send(Bukkit.getPlayer(customPlayer.getName()));
 		}
-		persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+		persistanceManager.getPlayerManager().commit(customPlayer);
 	}
 	
 	public void toggleFreeze(CommandSender sender, Player target)
 	{
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, target.getUniqueId());
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(target.getUniqueId());
 		if (customPlayer.getModerationData().isFreeze())
 		{
 			customPlayer.getModerationData().setFreeze(false);
@@ -60,12 +59,12 @@ public class FreezeManager
 					+ ChatColor.LIGHT_PURPLE + " est maintenant freeze.").send(sender);
 			if (customPlayer.isOnline()) new Message(ChatColor.GRAY + "Vous êtes maintenant freeze.").send(Bukkit.getPlayer(customPlayer.getName()));
 		}
-		persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+		persistanceManager.getPlayerManager().commit(customPlayer);
 	}
 	
 	public void toggleFreeze(CustomPlayer customPlayer)
 	{
 		customPlayer.getModerationData().setFreeze(!customPlayer.getModerationData().isFreeze());
-		persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+		persistanceManager.getPlayerManager().commit(customPlayer);
 	}
 }

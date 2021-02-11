@@ -5,7 +5,6 @@ import fr.heavenmoon.core.bukkit.format.Message;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisKey;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -34,7 +33,7 @@ public class ModManager {
         customPlayer.getModerationData().setVanish(true);
         customPlayer.getModerationData().setSpeed(false);
         customPlayer.getModerationData().setFly(true);
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+        persistanceManager.getPlayerManager().commit(customPlayer);
         Player player = Bukkit.getPlayer(customPlayer.getName());
         getItems(player);
         plugin.getVanishManager().enableVanish(player);
@@ -55,7 +54,7 @@ public class ModManager {
         customPlayer.getModerationData().setTools(false);
         customPlayer.getModerationData().setVanish(false);
         customPlayer.getModerationData().setSpeed(false);
-        persistanceManager.getPlayerManager().commit(RedisKey.PLAYER, customPlayer);
+        persistanceManager.getPlayerManager().commit(customPlayer);
         Player player = Bukkit.getPlayer(customPlayer.getName());
         player.getInventory().clear();
         plugin.getVanishManager().disableVanish(player);
@@ -74,7 +73,7 @@ public class ModManager {
     }
 
     public void getItems(Player player) {
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(RedisKey.PLAYER, player.getUniqueId());
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
         if (!customPlayer.getModerationData().isEnable()) {
             new Message(PrefixType.ERROR, "Vous devez être en mode mod pour effectuer cette action.").send(player);
             return;
