@@ -2,10 +2,13 @@ package fr.heavenmoon.core.bukkit.commands.mod;
 
 import fr.heavenmoon.core.bukkit.MoonBukkitCore;
 import fr.heavenmoon.core.bukkit.format.Message;
+import fr.heavenmoon.core.bukkit.mod.PlayerModEvent;
+import fr.heavenmoon.core.bukkit.mod.PlayerModToolsEvent;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.core.common.format.message.MessageType;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -50,11 +53,13 @@ public class ModoCommand implements CommandExecutor
 				player.getInventory().clear();
 				customPlayer.getModerationData().setTools(false);
 				persistanceManager.getPlayerManager().commit(customPlayer);
+				Bukkit.getServer().getPluginManager().callEvent(new PlayerModToolsEvent(customPlayer, player));
 				return true;
 			}
 			plugin.getModManager().getItems(player);
 			customPlayer.getModerationData().setTools(true);
 			persistanceManager.getPlayerManager().commit(customPlayer);
+			Bukkit.getServer().getPluginManager().callEvent(new PlayerModToolsEvent(customPlayer, player));
 		}
 		else
 		{

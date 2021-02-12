@@ -43,6 +43,11 @@ public class RedisConnectListener
 		}
 		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 		String server = args.get(1);
+		if (!persistanceManager.getServerManager().exist(server))
+		{
+			new Message(PrefixType.ERROR, "Le serveur est éteint").send(player);
+			return;
+		}
 		CustomServer customServer = persistanceManager.getServerManager().getCustomServer(server);
 		if (!customServer.getStatus().equals(ServerStatus.STARTED))
 		{
