@@ -18,7 +18,7 @@ public class HealCommand implements CommandExecutor
 	private final MoonBukkitCore plugin;
 	private final PersistanceManager persistanceManager;
 	private RankList rank = RankList.MODERATEUR;
-	private RankList max_rank = RankList.MODERATEUR;
+	private RankList max_rank = RankList.SUPERMODO;
 	private String syntax = "/heal <pseudo>";
 	
 	public HealCommand(MoonBukkitCore plugin)

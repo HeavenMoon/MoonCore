@@ -21,7 +21,7 @@ public class FlyCommand implements CommandExecutor
 	private static PersistanceManager persistanceManager;
 	
 	private RankList rank = RankList.MODERATEUR;
-	private RankList max_rank = RankList.ADMINISTRATEUR;
+	private RankList max_rank = RankList.SUPERMODO;
 	private String syntax = "/fly <pseudo>";
 	
 	public FlyCommand(MoonBukkitCore plugin)

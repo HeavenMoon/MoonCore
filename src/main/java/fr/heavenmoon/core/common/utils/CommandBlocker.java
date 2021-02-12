@@ -2,11 +2,16 @@ package fr.heavenmoon.core.common.utils;
 
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 
 public class CommandBlocker {
@@ -27,6 +32,9 @@ public class CommandBlocker {
             removeCommand(MINECRAFT_PREFIX, "tell");
             removeCommand(MINECRAFT_PREFIX, "me");
             removeCommand(MINECRAFT_PREFIX, "trigger");
+            removeCommand(MINECRAFT_PREFIX, "ban");
+            removeCommand(MINECRAFT_PREFIX, "ban-ip");
+            removeCommand(MINECRAFT_PREFIX, "banlist");
 
             // Bukkit
             removeCommand(BUKKIT_PREFIX, "about", "version", "ver", "icanhasbukkit");
@@ -36,6 +44,7 @@ public class CommandBlocker {
             removeCommand(BUKKIT_PREFIX, "save-all", "save-off", "save-on");
             removeCommand(BUKKIT_PREFIX, "trigger");
 
+            
             // Spigot
             removeCommand(SPIGOT_PREFIX, "restart");
 

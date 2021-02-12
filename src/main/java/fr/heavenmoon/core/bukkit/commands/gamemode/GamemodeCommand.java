@@ -17,7 +17,8 @@ public class GamemodeCommand implements CommandExecutor
 	
 	private final MoonBukkitCore plugin;
 	private final PersistanceManager persistanceManager;
-	RankList rank = RankList.ADMINISTRATEUR;
+	RankList rank = RankList.MODERATEUR;
+	RankList maxRank = RankList.SUPERMODO;
 	
 	public GamemodeCommand(MoonBukkitCore plugin)
 	{
@@ -47,6 +48,11 @@ public class GamemodeCommand implements CommandExecutor
 		}
 		if (args.length == 2)
 		{
+			if (!customPlayer.hasPermission(this.maxRank))
+			{
+				(new Message(MessageType.PERMISSION)).send(sender);
+				return false;
+			}
 			String gamemode = args[0];
 			String target = args[1];
 			PlayerUtils.setGamemode(player, gamemode, target);

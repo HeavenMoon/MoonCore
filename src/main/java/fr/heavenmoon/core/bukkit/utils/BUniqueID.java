@@ -10,12 +10,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class BUniqueID
 {
 	
 	private static String PROFILE_URL = "https://api.mojang.com/users/profiles/minecraft/";
+	private static String PLAYERDB = "http://playerdb.co/api/player/minecraft/";
 	private static JSONParser JSON_PARSER = new JSONParser();
 	
 	public static String generate()
@@ -25,10 +29,15 @@ public class BUniqueID
 	
 	public static String getMojang(String name)
 	{
+		List<String> APIS = Arrays.asList(PROFILE_URL, PLAYERDB);
+		Random random = new Random();
+		String api = APIS.get(random.nextInt(APIS.size()));
 		try
 		{
+			URL url = new URL(api + name);
+			
 			JSONObject json;
-			URL url = new URL(PROFILE_URL + name);
+			
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream())))
 			{
 				json = (JSONObject) JSON_PARSER.parse(in);

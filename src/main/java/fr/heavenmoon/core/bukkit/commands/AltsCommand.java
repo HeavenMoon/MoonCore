@@ -17,7 +17,7 @@ public class AltsCommand implements CommandExecutor
 	
 	private final MoonBukkitCore plugin;
 	private final PersistanceManager persistanceManager;
-	private RankList rank = RankList.GUIDE;
+	private RankList rank = RankList.MODERATEUR;
 	private String syntax = "/alts <pseudo>";
 	
 	public AltsCommand(MoonBukkitCore plugin)

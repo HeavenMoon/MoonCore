@@ -44,6 +44,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.redisson.api.listener.MessageListener;
 
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -141,9 +142,10 @@ public class MoonBukkitCore extends JavaPlugin implements MoonPlatform {
         guildManager = new GuildManager(this);
         commons.getLogger().info("Bukkit core managers successfully loaded !");
 
-//        for (RankList rank : RankList.values()) {
-//            teams.add(new ScoreboardTeam("" + rank.getOrder(), ChatColor.getByChar(rank.getStyleCode()) + rank.getPrefix()));
-//        }
+        for (RankList rank : RankList.values()) {
+            teams.add(new ScoreboardTeam("" + rank.getOrder(), ChatColor.getByChar(rank.getStyleCode()) + rank.getPrefix()));
+        }
+        
         this.commons.getLogger().info("Loading bukkit action !");
         Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) this, new Runnable()
         {
@@ -156,9 +158,7 @@ public class MoonBukkitCore extends JavaPlugin implements MoonPlatform {
         customServer.setStatus(ServerStatus.STARTED);
         this.commons.getPersistanceManager().getServerManager().commit(customServer);
         this.commons.getPersistanceManager().getServerManager().update(customServer);
-
-        CommandBlocker.removeCommands();
-
+        
         commons.getLogger().info("Enabling Core successful !");
         super.onEnable();
     }
@@ -313,7 +313,7 @@ public class MoonBukkitCore extends JavaPlugin implements MoonPlatform {
     {
         try
         {
-            return Inet4Address.getLocalHost().getHostAddress();
+            return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e)
         {
             e.printStackTrace();

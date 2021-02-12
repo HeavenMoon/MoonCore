@@ -25,7 +25,7 @@ public class GemmesComand implements CommandExecutor
 	private final PersistanceManager persistanceManager;
 	private RankList rank = RankList.ADMINISTRATEUR;
 	
-	private String syntax = "/stars <add|remove> <pseudo> <montant>";
+	private String syntax = "/gemmes <add|remove> <pseudo> <montant>";
 	
 	public GemmesComand(MoonBukkitCore plugin)
 	{

@@ -47,8 +47,7 @@ public class MoonCommons
 	private PluginConfig config = new PluginConfig(null, null, null, null);
 	
 	private Path databaseConfigFile;
-	private DatabaseConfig databaseConfig =
-			new DatabaseConfig(null, null, 0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+	private DatabaseConfig databaseConfig = new DatabaseConfig(null, null, 0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	
 	private Path redisConfigFile;
 	private RedisConfig redisConfig = new RedisConfig(null, 0, null, null, null, null, null, null, null);

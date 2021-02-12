@@ -28,7 +28,7 @@ public class StaffManager {
         List<ProxiedPlayer> staffs = plugin.getProxy()
                                            .getPlayers()
                                            .stream()
-                                           .filter(p -> persistanceManager.getPlayerManager().getCustomPlayer(                               p.getUniqueId()).getRankData().getOrder() >= 5).collect(Collectors.toList());
+                                           .filter(p -> persistanceManager.getPlayerManager().getCustomPlayer(p.getUniqueId()).getRankData().getPermission() >= 60).collect(Collectors.toList());
 
         staffs.forEach(staffPlayer -> {
             CustomPlayer customStaff = persistanceManager.getPlayerManager().getCustomPlayer(staffPlayer.getUniqueId());

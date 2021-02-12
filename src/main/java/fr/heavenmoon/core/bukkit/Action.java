@@ -13,6 +13,7 @@ import fr.heavenmoon.core.bukkit.commands.teleport.TeleporthereCommand;
 import fr.heavenmoon.core.bukkit.commands.time.*;
 import fr.heavenmoon.core.bukkit.listeners.*;
 import fr.heavenmoon.core.bukkit.scoreboard.SbCommand;
+import fr.heavenmoon.core.common.utils.CommandBlocker;
 import fr.heavenmoon.core.common.utils.DCommand;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import org.bukkit.Bukkit;
@@ -31,6 +32,8 @@ public class Action {
         this.plugin = plugin;
         this.persistanceManager = plugin.getCommons().getPersistanceManager();
         
+        CommandBlocker.removeCommands();
+    
         registerEvents();
         loadCommands();
     }

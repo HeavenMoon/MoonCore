@@ -24,6 +24,7 @@ import org.redisson.api.RedissonClient;
 import org.redisson.api.listener.MessageListener;
 
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 
@@ -150,7 +151,7 @@ public class MoonBungeeCore extends Plugin implements MoonPlatform {
     {
         try
         {
-            return Inet4Address.getLocalHost().getHostAddress();
+            return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e)
         {
             e.printStackTrace();

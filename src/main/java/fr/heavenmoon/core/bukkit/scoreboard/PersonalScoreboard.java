@@ -71,7 +71,7 @@ public class PersonalScoreboard
 		objectiveSign.setLine(0, ChatColor.GRAY + "");
 		objectiveSign.setLine(1,
 				ChatColor.GRAY + "Compte: " + ChatColor.getByChar(this.rank.getStyleCode()) + customPlayer.getName());
-		objectiveSign.setLine(2, ChatColor.GRAY + "Rank: " + ChatColor.getByChar(this.rank.getStyleCode()) + this.rank.getPrefix());
+		objectiveSign.setLine(2, ChatColor.GRAY + "Grade: " + ChatColor.getByChar(this.rank.getStyleCode()) + this.rank.getPrefix());
 		objectiveSign.setLine(3, ChatColor.GRAY + "Etoiles: " + ChatColor.LIGHT_PURPLE + NumberUtils.format(this.stars) + " ✯");
 		objectiveSign.setLine(4, ChatColor.GRAY + "Gemmes: " + ChatColor.DARK_PURPLE + NumberUtils.format(this.gemmes) + " ◈");
 		objectiveSign.setLine(5, ChatColor.AQUA + "");
@@ -101,10 +101,9 @@ public class PersonalScoreboard
 		{
 			for (Player p2 : Bukkit.getOnlinePlayers())
 			{
-				ScoreboardTeam team =
-						plugin.getSbTeam("" + Arrays.stream(RankList.values())
-						                            .filter(r -> persistanceManager.getPlayerManager().getCustomPlayer(		                            p2.getUniqueId()).getRankData().getRank() == r).findAny()
-						                            .orElse(RankList.EXPLORATEUR).getOrder());
+				ScoreboardTeam team = plugin.getSbTeam("" + Arrays.stream(RankList.values()).filter(r ->
+						persistanceManager.getPlayerManager().getCustomPlayer(p2.getUniqueId()).getRankData().getRank() == r)
+				                                                  .findAny().orElse(RankList.EXPLORATEUR).getOrder());
 				
 				if (team != null)
 				{

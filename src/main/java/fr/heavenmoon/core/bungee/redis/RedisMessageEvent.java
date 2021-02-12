@@ -6,17 +6,13 @@ import fr.heavenmoon.core.bungee.listeners.redis.RedisConnectListener;
 import fr.heavenmoon.core.bungee.listeners.redis.RedisSanctionListener;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
-import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.persistanceapi.customs.redis.PubSubMessage;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisPublisher;
 import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import org.bukkit.ChatColor;
 import org.redisson.api.listener.MessageListener;
 
-import java.net.Socket;
 import java.util.List;
 
 public class RedisMessageEvent implements MessageListener {

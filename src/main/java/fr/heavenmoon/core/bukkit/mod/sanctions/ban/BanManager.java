@@ -98,7 +98,8 @@ public class BanManager
 			customPlayer.getModerationData().setCurrentSanctionId(sanctionid.toString());
 			persistanceManager.getPlayerManager().commit(customPlayer);
 			
-			new RedisPublisher(persistanceManager, "Sanction").setArguments("MuteAdd", customPlayer.getName(), reason, String.valueOf(apply),
+			new RedisPublisher(persistanceManager, "Sanction").setArguments("BanAdd", customPlayer.getUniqueID().toString(),
+					customModerator.getUniqueID().toString(), reason, String.valueOf(apply),
 					String.valueOf(until)).publish(new RedisTarget(RedisTarget.RedisTargetType.PROXY));
 			
 			new Message(PrefixType.MODO,
@@ -139,15 +140,15 @@ public class BanManager
 				new Message(PrefixType.ERROR, "Vous ne pouvez pas dé-bannir ce joueur.").send(sender);
 				return;
 			}
-			
-			persistanceManager.getSanctionManager().cancelSanction(customSanction, true);
-			
 			customPlayer.getModerationData().setCurrentSanctionId("null");
 			persistanceManager.getPlayerManager().commit(customPlayer);
 			
-			new Message(PrefixType.MODO,
-					"Le joueur " + ChatColor.GRAY + customPlayer.getName() + ChatColor.LIGHT_PURPLE + " a été dé-banni du serveur.")
-					.send(sender);
+			if(persistanceManager.getSanctionManager().cancelSanction(customSanction, true))
+			{
+				new Message(PrefixType.MODO,
+						"Le joueur " + ChatColor.GRAY + customPlayer.getName() + ChatColor.LIGHT_PURPLE + " a été dé-banni du serveur.")
+						.send(sender);
+			}
 		}
 	}
 	

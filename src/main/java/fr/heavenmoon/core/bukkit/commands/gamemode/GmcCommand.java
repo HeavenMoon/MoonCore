@@ -19,8 +19,8 @@ public class GmcCommand implements CommandExecutor
 	
 	private final MoonBukkitCore plugin;
 	private final PersistanceManager persistanceManager;
-	RankList rank = RankList.ADMINISTRATEUR;
-	RankList max_rank = RankList.ADMINISTRATEUR;
+	RankList rank = RankList.MODERATEUR;
+	RankList max_rank = RankList.SUPERMODO;
 	
 	public GmcCommand(MoonBukkitCore plugin)
 	{

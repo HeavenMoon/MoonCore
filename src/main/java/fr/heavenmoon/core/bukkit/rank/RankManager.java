@@ -116,22 +116,9 @@ public class RankManager {
             new Message(PrefixType.SERVER,
                     "Vous possédez maintenant le grade " + ChatColor.getByChar(rank.getStyleCode()) + rank.getName() + ChatColor.GRAY + ".").send(customPlayer);
     }
+    
 
-    public void update(String author, CustomPlayer customPlayer, char style, String prefix, String suffix, char chat, int order) {
-        if (style != 'n')
-            customPlayer.getRankData().setStyleCode(style);
-        if (prefix != null)
-            customPlayer.getRankData().setPrefix(prefix);
-        if (suffix != null)
-            customPlayer.getRankData().setSuffix(suffix);
-        if (chat != 'n')
-            customPlayer.getRankData().setChatStyleCode(chat);
-        if (order < 0)
-            customPlayer.getRankData().setOrder(order);
-        persistanceManager.getPlayerManager().commit(customPlayer);
-    }
-
-    public boolean isOrder(int order) {
+    public boolean isOrder(String order) {
         for (RankList rank : RankList.values()) {
             if (rank.getOrder() == order)
                 return true;

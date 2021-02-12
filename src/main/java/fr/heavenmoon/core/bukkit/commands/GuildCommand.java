@@ -19,7 +19,7 @@ public class GuildCommand implements CommandExecutor
 	private final MoonBukkitCore plugin;
 	private final PersistanceManager persistanceManager;
 	private String syntax = "/guild";
-	private RankList rank = RankList.ADMINISTRATEUR;
+	private RankList rank = RankList.SUPERMODO;
 	
 	public GuildCommand(MoonBukkitCore plugin)
 	{

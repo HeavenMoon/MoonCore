@@ -29,35 +29,33 @@ public class LoginListener implements Listener {
 
         String name = event.getConnection().getName();
         UUID uuid = event.getConnection().getUniqueId();
-
-        plugin.executeAsync(() ->
+    
+        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
+        if (persistanceManager.getSanctionManager().isBanned(customPlayer))
         {
-            CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
-            if (persistanceManager.getSanctionManager().isBanned(customPlayer))
+            CustomSanction sanction = persistanceManager.getSanctionManager().getCurrentCustomSanction(customPlayer);
+            CustomPlayer customPunisher = persistanceManager.getPlayerManager().getCustomPlayer(sanction.getPunisherUuid());
+        
+            if (sanction.isValid())
             {
-                CustomSanction sanction = persistanceManager.getSanctionManager().getCurrentCustomSanction(customPlayer);
-                CustomPlayer customPunisher = persistanceManager.getPlayerManager().getCustomPlayer(sanction.getPunisherUuid());
-
-                if (sanction.isValid())
-                {
-                    event.setCancelled(true);
-                    event.setCancelReason(TextComponent.fromLegacyText(plugin.getSanctionUtils().getBanReason(ChatColor.getByChar(customPunisher
-                                    .getRankData().getStyleCode()) + customPunisher.getRankData().getPrefix() +customPunisher.getName(),
-                            sanction.getReason(), sanction.getCreationTime(), sanction.getExpirationTime())));
-                    return;
-                }
-                else
-                {
-                    plugin.getSanctionUtils().banRemove(name, event.getConnection().getUniqueId());
-                }
-            }
-
-            if (customPlayer.getRankData().getPermission() < persistanceManager.getServerManager().getCustomServer(plugin.getCommons().getConfig().getServerName()).getWhitelist().getRank().getPermission())
-            {
+                event.setCancelReason(TextComponent.fromLegacyText(plugin.getSanctionUtils().getBanReason(ChatColor.getByChar(customPunisher
+                                .getRankData().getStyleCode()) + customPunisher.getRankData().getPrefix() +customPunisher.getName(),
+                        sanction.getReason(), sanction.getCreationTime(), sanction.getExpirationTime())));
                 event.setCancelled(true);
-                event.setCancelReason(TextComponent.fromLegacyText(persistanceManager.getServerManager().getCustomServer(plugin.getCommons().getConfig().getServerName()).getWhitelist().getDescription()));
                 return;
             }
-        });
+            else
+            {
+                plugin.getSanctionUtils().banRemove(name, event.getConnection().getUniqueId());
+            }
+        }
+        if (customPlayer.getRankData().getPermission() < persistanceManager.getServerManager().getCustomServer(plugin.getCommons().getConfig().getServerName()).getWhitelist().getRank().getPermission())
+        {
+            event.setCancelReason(TextComponent.fromLegacyText(persistanceManager.getServerManager().getCustomServer(plugin.getCommons().getConfig().getServerName()).getWhitelist().getDescription()));
+            event.setCancelled(true);
+            return;
+        }
+    
+        
     }
 }

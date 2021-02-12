@@ -6,6 +6,7 @@ import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -37,10 +38,17 @@ public class CacheListener implements Listener
 	@EventHandler
 	public void on(PlayerLoginEvent event)
 	{
+		Player player = event.getPlayer();
+		
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+		if (customPlayer.getRankData().getPermission() < persistanceManager.getServerManager().getCustomServer(plugin.getCommons().getConfig().getServerName()).getWhitelist().getRank().getPermission())
+		{
+			event.getPlayer().kickPlayer(persistanceManager.getServerManager().getCustomServer(plugin.getCommons().getConfig().getServerName()).getWhitelist().getDescription());
+			return;
+		}
 		plugin.executeAsync(() ->
 		{
-			Player player = event.getPlayer();
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+			
 			String hostname = event.getHostname();
 			Matcher m = PACTIFY_HOSTNAME_PATTERN.matcher(hostname);
 			int launcherProtocolVersion;
@@ -73,10 +81,6 @@ public class CacheListener implements Listener
 		if (customPlayer.getRankData().getRank() == RankList.ADMINISTRATEUR)
 			event.getPlayer().setOp(true);
 		
-		// Send team to player
-		for (ScoreboardTeam team : plugin.getTeams())
-			(((CraftPlayer) Bukkit.getPlayer(event.getPlayer().getUniqueId())).getHandle()).playerConnection.sendPacket(team.createTeam());
-		plugin.getScoreboardManager().onLogin(event.getPlayer());
 		
 		if (event.getPlayer().isDead())
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> event.getPlayer().spigot().respawn(), 2L);
@@ -86,12 +90,17 @@ public class CacheListener implements Listener
 	public void on(PlayerQuitEvent event)
 	{
 		Player player = event.getPlayer();
-		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+		
 		// Remove team from player
 		for (ScoreboardTeam team : plugin.getTeams())
 			(((CraftPlayer) event.getPlayer()).getHandle()).playerConnection.sendPacket(team.removeTeam());
+		
 		plugin.getScoreboardManager().onLogout(event.getPlayer());
-		persistanceManager.getPlayerManager().removeFromCache(customPlayer);
+		
+		plugin.executeAsync(() -> {
+			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+			persistanceManager.getPlayerManager().removeFromCache(customPlayer);
+		});
 		
 	}
 }

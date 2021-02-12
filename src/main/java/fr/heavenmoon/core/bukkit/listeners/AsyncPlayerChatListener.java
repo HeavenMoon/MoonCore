@@ -45,9 +45,9 @@ public class AsyncPlayerChatListener implements Listener
 		String message = event.getMessage().replace("<3", "❤");
 		if (persistanceManager.getSanctionManager().isMuted(customPlayer))
 		{
+			System.out.println("muted");
             CustomSanction customSanction = persistanceManager.getSanctionManager().getCurrentCustomSanction(customPlayer);
 			long time = ((customSanction.getExpirationTime() - customSanction.getCreationTime()) / 60000);
-			
 			if (customSanction.isValid())
 			{
 				new Message(ChatColor.GRAY + "Tu a été réduit au silence pendant " + ChatColor.LIGHT_PURPLE + time + " minute(s)" +
@@ -59,7 +59,7 @@ public class AsyncPlayerChatListener implements Listener
 			}
 			else
 			{
-				plugin.getMuteManager().muteRemove(customPlayer.getName());
+				plugin.getMuteManager().muteRemove(customPlayer);
 			}
 		}
 		if (customPlayer.hasPermission(RankList.ADMINISTRATEUR))
@@ -95,7 +95,7 @@ public class AsyncPlayerChatListener implements Listener
 		Bukkit.getOnlinePlayers().forEach(p ->
 		{
 			p.spigot().sendMessage(chatFormat);
-			System.out.println(chatFormat.toString());
+			System.out.println(chatFormat.getText());
 		});
 		
 		event.setCancelled(true);

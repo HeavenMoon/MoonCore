@@ -12,9 +12,11 @@ import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.CustomSanction;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.protocol.packet.Chat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -54,11 +56,7 @@ public class ModlogsCommand implements CommandExecutor {
 
                         CustomPlayer customModerator = persistanceManager.getPlayerManager().getCustomPlayer(customSanction.getPunisherUuid());
 
-                        TextComponent lineOne = new TextComponent();
-
-                        TextComponent prefix_1 = new TextComponent("[ModLogs] ");
-                        prefix_1.setColor(ChatColor.LIGHT_PURPLE);
-
+                        
                         String type = "null";
                         switch (customSanction.getType()) {
                             case BAN:
@@ -68,36 +66,41 @@ public class ModlogsCommand implements CommandExecutor {
                                 type = "Réduit au silence";
                                 break;
                         }
-
-                        TextComponent sanction_1 = new TextComponent("§b" + customTarget.getName() + " §fest §b" + type + "§f.");
-                        lineOne.addExtra(prefix_1);
-                        lineOne.addExtra(sanction_1);
-                        player.spigot().sendMessage(lineOne);
+    
+                        new Message("§d[ModLogs] §b" + customTarget.getName() + " §fest §b" + type + "§f.").send(player);
+                      
 
                         long sTime = (customSanction.getExpirationTime() - customSanction.getCreationTime()) / 1000L;
-
-                        TextComponent lineTwo = new TextComponent();
-                        TextComponent prefix_2 = new TextComponent(" ");
-                        TextComponent sanction_2 = new TextComponent("§8• §f" + customSanction.getType().getName() + " ");
-                        TextComponent time = new TextComponent("§8/ §f" + (new CustomDate(sTime)).getCleanFormat(sTime) + " ");
-                        TextComponent info = new TextComponent("§c[i]");
+    
+                        BaseComponent lineOne = new TextComponent(" ");
+                        BaseComponent sanction =
+                                new TextComponent(
+                                        net.md_5.bungee.api.ChatColor.DARK_GRAY + "• " + net.md_5.bungee.api.ChatColor.WHITE + customSanction.getType().getName() +
+                                " ");
+                        BaseComponent time = new TextComponent(net.md_5.bungee.api.ChatColor.DARK_GRAY + "/ " + net.md_5.bungee.api.ChatColor.WHITE + new CustomDate(sTime)
+                                .getCleanFormat(sTime).replace("00 J", "").replace(", 00 h", "").replace(", 00 min", "").replace(", 00 s",
+                                        "") + " ");
+                        BaseComponent author =
+                                new TextComponent(net.md_5.bungee.api.ChatColor.DARK_GRAY + "/ " + net.md_5.bungee.api.ChatColor.WHITE + (customSanction.getPunisherUuid() != null ? "MANUAL" : "AUTO") + " ");
+                        BaseComponent info = new TextComponent("§c[i]");
 
                         info.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (new ComponentBuilder("§7Fin dans: §e"
                                 + (new CustomDate(System.currentTimeMillis())).getDurationUntil(customSanction.getExpirationTime())
-                                .replace(" jour(s), ", "j").replace(" minute(s), ", "m")
+                                .replace(" jour(s), ", "j").replace(" heure(s), ", "h").replace(" minute(s), ", "m")
                                 .replace(" seconde(s)", "s") + "\n\n§7Par: §e" + customModerator.getName() + "\n\n§7Raison: §e" + customSanction.getReason())).create()));
-                        lineTwo.addExtra(prefix_2);
-                        lineTwo.addExtra(sanction_2);
-                        lineTwo.addExtra(time);
-                        lineTwo.addExtra(info);
-                        player.spigot().sendMessage(lineTwo);
+                        lineOne.addExtra(sanction);
+                        lineOne.addExtra(time);
+                        lineOne.addExtra(author);
+                        lineOne.addExtra(info);
+                        player.spigot().sendMessage(lineOne);
 
                         new Message("§d" + FormatUtils.medGraySpacer()).send(player);
                     } else if (persistanceManager.getSanctionManager().cancelSanction(customSanction, false)) {
                         new Message(PrefixType.MODO, customTarget.getName() + " n'est pas sanctionné.")
                                 .send(customPlayer);
                     } else {
-                        new Message(PrefixType.ERROR, "sanction is invalid but sanctionCancel impossible, please contact an Administrator. (§8SanctionId: §7" + customSanction.getSanctionId() + "§8, time: §7" + System.currentTimeMillis() + "§c)").send(customPlayer);
+                        new Message(PrefixType.ERROR, "sanction is invalid but sanction cancel impossible, please contact an " +
+                                "Administrator. (§8SanctionId: §7" + customSanction.getSanctionId() + "§8, time: §7" + System.currentTimeMillis() + "§c)").send(customPlayer);
                     }
                 } else {
                     new Message(PrefixType.MODO, customTarget.getName() + " n'est pas sanctionné.")

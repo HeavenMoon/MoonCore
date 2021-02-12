@@ -44,11 +44,11 @@ public class KickManager
 				new Message(PrefixType.ERROR, "Vous ne pouvez pas sanctionner ce joueur.").send(sender);
 				return;
 			}
-			String author = sender.getName();
+			String author = ((Player) sender).getUniqueId().toString();
 			
 			
 			if (customPlayer.isOnline())
-				new RedisPublisher(persistanceManager, "Sanction").setArguments("KickAdd", customPlayer.getName(), author, reason)
+				new RedisPublisher(persistanceManager, "Sanction").setArguments("KickAdd", customPlayer.getUniqueID().toString(), author, reason)
 				                                                   .publish(new RedisTarget(RedisTarget.RedisTargetType.PROXY));
             
             new Message(PrefixType.MODO,

@@ -38,7 +38,7 @@ public class InfoGUI extends AbstractGui
 		UUID uuid = BUniqueID.get(targetName);
 		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 		setSlotData(ChatColor.getByChar(customPlayer.getRankData().getChatStyleCode()) + customPlayer.getName(),
-				new HeadBuilder().setOwner(customPlayer.getName()).build(), 13, makePlayerItemsLore(customPlayer), null);
+				new HeadBuilder().setName(ChatColor.getByChar(customPlayer.getRankData().getChatStyleCode()) + customPlayer.getName()).setOwner(customPlayer.getName()).build(), 13, makePlayerItemsLore(customPlayer), null);
 		setSlotData(ChatColor.GOLD + "Caractéristiques", Material.NETHER_STAR, 20, makePlayerStatsLore(customPlayer), null);
 		setSlotData(ChatColor.GOLD + "Grade", Material.DIAMOND_CHESTPLATE, 21, makePlayerRankLore(customPlayer), null);
 		setSlotData(ChatColor.GOLD + "Modération", Material.WATCH, 22, makePlayerModLore(customPlayer), null);
