@@ -1,8 +1,6 @@
 package fr.heavenmoon.core.common.utils;
 
 import net.md_5.bungee.api.ProxyServer;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -12,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class UniqueID
@@ -28,8 +27,7 @@ public class UniqueID
 	
 	public static String generate(String name)
 	{
-		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
-		return offlinePlayer.getUniqueId().toString();
+		return UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)).toString();
 	}
 	
 	// public static String get(Player player) { return get(player.getName()); }
@@ -73,7 +71,8 @@ public class UniqueID
 			if (id != null)
 			{
 				ProxyServer.getInstance().getLogger().info(name + " is premium");
-				return convertUUID(id);
+				return id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" +
+					id.substring(20, 32);
 			}
 		}
 		catch (IOException e)
@@ -83,6 +82,14 @@ public class UniqueID
 		ProxyServer.getInstance().getLogger().info(name + " is cracked");
 		
 		return null;
+	}
+	
+	public static UUID get(String name)
+	{
+		if (ProxyServer.getInstance().getPlayer(name) != null) return ProxyServer.getInstance().getPlayer(name).getUniqueId();
+		String uuid = getMojang(name);
+		if (uuid == null) uuid = generate(name);
+		return UUID.fromString(uuid);
 	}
 	
 	public static boolean isPremium(String name)

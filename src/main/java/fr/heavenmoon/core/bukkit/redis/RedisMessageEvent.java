@@ -1,11 +1,9 @@
 package fr.heavenmoon.core.bukkit.redis;
 
 import fr.heavenmoon.core.bukkit.MoonBukkitCore;
-import fr.heavenmoon.core.bukkit.listeners.redis.RedisConnectListener;
+import fr.heavenmoon.core.bukkit.listeners.redis.RedisTeleportListener;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import fr.heavenmoon.persistanceapi.customs.redis.PubSubMessage;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import fr.heavenmoon.persistanceapi.managers.redis.PubSubMessage;
 import org.redisson.api.listener.MessageListener;
 
 import java.util.List;
@@ -22,10 +20,12 @@ public class RedisMessageEvent implements MessageListener {
     public void onMessage(String channel, Object message) {
         PubSubMessage pubSubMessage = PubSubMessage.fromJson((String) message);
         String title = pubSubMessage.getTitle();
-        List<String> args = pubSubMessage.getArguments();
 
-        if (title.equalsIgnoreCase("Teleport")) {
-            new RedisConnectListener(channel, pubSubMessage, persistanceManager);
+        switch (title)
+        {
+            case "Teleport":
+                new RedisTeleportListener(channel, pubSubMessage, persistanceManager);
+                break;
         }
     }
 

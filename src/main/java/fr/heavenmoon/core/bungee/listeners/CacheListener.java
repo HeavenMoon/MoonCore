@@ -52,7 +52,6 @@ public class CacheListener implements Listener
 				customPlayer.setPremium(UniqueID.getMojang(name) != null);
 			}
 			customPlayer.setOnline(true);
-			customPlayer.setServerName(null);
 			customPlayer.setProxyName(plugin.getCommons().getConfig().getServerName());
 			customPlayer.setLastLogin(System.currentTimeMillis());
 			customPlayer.setLastIP(address);

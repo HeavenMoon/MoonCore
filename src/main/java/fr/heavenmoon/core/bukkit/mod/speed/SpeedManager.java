@@ -40,10 +40,11 @@ public class SpeedManager {
 
     public void refreshSpeed(Player player) {
         CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+        System.out.println(customPlayer.getModerationData().isSpeed());
         if (customPlayer.getModerationData().isSpeed()) {
-            disableSpeed(player);
-        } else {
             enableSpeed(player);
+        } else {
+            disableSpeed(player);
         }
     }
 

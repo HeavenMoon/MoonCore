@@ -6,7 +6,7 @@ import fr.heavenmoon.core.bungee.format.Message;
 import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
-import fr.heavenmoon.persistanceapi.customs.redis.PubSubMessage;
+import fr.heavenmoon.persistanceapi.managers.redis.PubSubMessage;
 import fr.heavenmoon.persistanceapi.customs.server.CustomServer;
 import fr.heavenmoon.persistanceapi.customs.server.ServerStatus;
 import net.md_5.bungee.api.ProxyServer;
@@ -16,14 +16,14 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class RedisConnectListener
+public class RedisTeleportListener
 {
 	private final String channel;
 	
 	private final PubSubMessage pubSubMessage;
 	private final PersistanceManager persistanceManager;
 	
-	public RedisConnectListener(String channel, PubSubMessage pubSubMessage, PersistanceManager persistanceManager)
+	public RedisTeleportListener(String channel, PubSubMessage pubSubMessage, PersistanceManager persistanceManager)
 	{
 		this.channel = channel;
 		this.pubSubMessage = pubSubMessage;
@@ -36,9 +36,11 @@ public class RedisConnectListener
 		System.out.println("received packet");
 		System.out.println(channel + " " + pubSubMessage.getTitle() + " " + pubSubMessage.getArguments());
 		List<String> args = this.pubSubMessage.getArguments();
-		if (args.get(0).equalsIgnoreCase("Teleport")) {
+		if (args.get(0).equalsIgnoreCase("SimpleTeleport"))
+		{
 			
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MoonBukkitCore.get(), () -> {
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MoonBukkitCore.get(), () ->
+			{
 				Player player = Bukkit.getPlayer(args.get(1));
 				Player target = Bukkit.getPlayer(args.get(2));
 				if (player == null || target == null) return;

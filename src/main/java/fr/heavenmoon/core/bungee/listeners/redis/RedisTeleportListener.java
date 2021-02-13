@@ -1,14 +1,16 @@
 package fr.heavenmoon.core.bungee.listeners.redis;
 
-import com.imaginarycode.minecraft.redisbungee.RedisBungee;
-import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
-import fr.heavenmoon.core.bungee.MoonBungeeCore;
-import fr.heavenmoon.persistanceapi.customs.redis.PubSubMessage;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisPublisher;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
+
+import fr.heavenmoon.core.bungee.format.Message;
+import fr.heavenmoon.core.common.format.message.PrefixType;
+import fr.heavenmoon.core.common.utils.UniqueID;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
+import fr.heavenmoon.persistanceapi.managers.redis.PubSubMessage;
+import fr.heavenmoon.persistanceapi.managers.redis.RedisTarget;
+import fr.heavenmoon.persistanceapi.managers.redis.RedisPublisher;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.List;
@@ -34,22 +36,28 @@ public class RedisTeleportListener
 		List<String> args = this.pubSubMessage.getArguments();
 		if (args.get(0).equalsIgnoreCase("GlobalTeleport"))
 		{
-			RedisBungeeAPI redisBungeeAPI = RedisBungee.getApi();
 			String playername = args.get(1);
 			String targetname = args.get(2);
-			ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playername);
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
 			
-			if (redisBungeeAPI.getUuidFromName(targetname) == null) return;
-			
-			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(redisBungeeAPI.getUuidFromName(targetname));
-			if (customPlayer.getServerName() != customTarget.getServerName())
+			if (!ProxyServer.getInstance().getPlayer(playername).isConnected())
 			{
-				player.connect(ProxyServer.getInstance().getServerInfo(customTarget.getServerName()));
+				System.out.println("wrong proxy canceling...");
+				return;
 			}
-			new RedisPublisher(persistanceManager, "Teleport")
-					.setArguments("Teleport", playername, targetname)
-					.publish(new RedisTarget(RedisTarget.RedisTargetType.SERVER));
+			ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playername);
+			CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(UniqueID.get(targetname));
+			if (customTarget.isOnline() && customTarget.getServerName() != "null")
+			{
+				ServerInfo info = ProxyServer.getInstance().getServerInfo(customTarget.getServerName());
+				player.connect(info);
+				new RedisPublisher(persistanceManager, "Teleport")
+						.setArguments("SimpleTeleport", playername, targetname)
+						.publish(new RedisTarget(RedisTarget.RedisTargetType.SERVER));
+			}
+			else
+			{
+				new Message(PrefixType.ERROR, "Le joueur est sur un serveur injoignabl.");
+			}
 		}
 	}
 }

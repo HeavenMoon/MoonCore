@@ -4,7 +4,7 @@ import fr.heavenmoon.core.bungee.MoonBungeeCore;
 import fr.heavenmoon.core.bungee.format.Message;
 import fr.heavenmoon.core.bungee.utils.SanctionUtils;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.PubSubMessage;
+import fr.heavenmoon.persistanceapi.managers.redis.PubSubMessage;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import net.md_5.bungee.api.ChatColor;

@@ -68,6 +68,7 @@ public class CacheListener implements Listener
 			{
 				customPlayer.setAzlauncher(false);
 			}
+			customPlayer.setServerName(plugin.getCommons().getConfig().getServerName());
 			persistanceManager.getPlayerManager().commit(customPlayer);
 		});
 	}

@@ -52,12 +52,12 @@ public class PlayerJoinListener implements Listener
 	
 	private void initPlayer(Player player, CustomPlayer customPlayer)
 	{
+		System.out.println("Init " + player.getName() + " " + customPlayer.getUniqueID());
 		plugin.getVanishManager().refreshVanish(player);
 		plugin.getSpeedManager().refreshSpeed(player);
 		
 		player.setAllowFlight(customPlayer.getModerationData().isFly());
 		player.setGameMode(GameMode.getByValue(customPlayer.getGamemode()));
-		System.out.println(plugin.getCommons().getConfig().getServerName());
 		customPlayer.setServerName(plugin.getCommons().getConfig().getServerName());
 		customPlayer.setOnline(true);
 		

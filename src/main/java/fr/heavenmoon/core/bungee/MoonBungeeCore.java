@@ -11,7 +11,7 @@ import fr.heavenmoon.core.common.format.message.MessageType;
 import fr.heavenmoon.core.common.logger.LoggerAdapter;
 import fr.heavenmoon.core.common.logger.MoonLogger;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
+import fr.heavenmoon.persistanceapi.managers.redis.RedisTarget;
 import fr.heavenmoon.persistanceapi.customs.server.CustomServer;
 import fr.heavenmoon.persistanceapi.customs.server.ServerStatus;
 import fr.heavenmoon.persistanceapi.customs.server.ServerType;
@@ -34,8 +34,6 @@ public class MoonBungeeCore extends Plugin implements MoonPlatform {
 
     private MoonCommons commons = new MoonCommons(this);
     
-    private RedisTarget redisTarget;
-    
     private MoonLogger moonLogger;
 
     private StaffManager staffManager;
@@ -54,15 +52,10 @@ public class MoonBungeeCore extends Plugin implements MoonPlatform {
         super.onEnable();
         INSTANCE = this;
         
-        this.redisTarget = new RedisTarget(RedisTarget.RedisTargetType.PROXY);
         commons.init(RedisTarget.RedisTargetType.PROXY);
         this.redisMessageEvent = new RedisMessageEvent(this);
     
-        RedissonClient redissonClient = this.commons.getPersistanceManager().getRedisManager().getRedissonClient();
-        RTopic<String> rTopic = redissonClient.getTopic(RedisTarget.RedisTargetType.PROXY.getName());
-        rTopic.addListener(this.commons.getPlatform().getMessageEvent());
-    
-        this.commons.getLogger().info("PubSub registered !");
+
         CustomServer customServer = null;
         System.out.println(this.commons.getConfig().getServerName());
         if (!this.commons.getPersistanceManager().getServerManager().exist(this.commons.getConfig().getServerName()))

@@ -30,7 +30,7 @@ import fr.heavenmoon.core.common.logger.MoonLogger;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
+import fr.heavenmoon.persistanceapi.managers.redis.RedisTarget;
 import fr.heavenmoon.core.common.utils.CommandBlocker;
 import fr.heavenmoon.persistanceapi.customs.server.CustomServer;
 import fr.heavenmoon.persistanceapi.customs.server.ServerStatus;
@@ -58,9 +58,9 @@ public class MoonBukkitCore extends JavaPlugin implements MoonPlatform {
 
     private final MoonCommons commons = new MoonCommons(this);
     
-    private RedisTarget redisTarget;
-    
     private MoonLogger moonLogger;
+    
+    private RedisMessageEvent redisMessageEvent;
 
     private ScheduledExecutorService executorMonoThread;
     private ScheduledExecutorService scheduledExecutorService;
@@ -94,8 +94,9 @@ public class MoonBukkitCore extends JavaPlugin implements MoonPlatform {
     @Override
     public void onEnable() {
         INSTANCE = this;
-        this.redisTarget = new RedisTarget(RedisTarget.RedisTargetType.SERVER);
         commons.init(RedisTarget.RedisTargetType.SERVER);
+        this.redisMessageEvent = new RedisMessageEvent(this);
+        
         CustomServer customServer = null;
         if (!this.commons.getPersistanceManager().getServerManager().exist(this.commons.getConfig().getServerName()))
         {

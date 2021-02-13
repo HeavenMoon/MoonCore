@@ -4,12 +4,16 @@ import fr.heavenmoon.core.bungee.MoonBungeeCore;
 import fr.heavenmoon.core.bungee.format.Message;
 import fr.heavenmoon.core.bungee.listeners.redis.RedisConnectListener;
 import fr.heavenmoon.core.bungee.listeners.redis.RedisSanctionListener;
+import fr.heavenmoon.core.bungee.listeners.redis.RedisTeleportListener;
+import fr.heavenmoon.core.common.format.message.PrefixType;
+import fr.heavenmoon.core.common.utils.UniqueID;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
-import fr.heavenmoon.persistanceapi.customs.redis.PubSubMessage;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisPublisher;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
+import fr.heavenmoon.persistanceapi.managers.redis.PubSubMessage;
+import fr.heavenmoon.persistanceapi.managers.redis.RedisPublisher;
+import fr.heavenmoon.persistanceapi.managers.redis.RedisTarget;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.redisson.api.listener.MessageListener;
 
@@ -28,11 +32,7 @@ public class RedisMessageEvent implements MessageListener {
     public void onMessage(String channel, Object message) {
         PubSubMessage pubSubMessage = PubSubMessage.fromJson((String) message);
         String title = pubSubMessage.getTitle();
-        List<String> args = pubSubMessage.getArguments();
-
-        ProxiedPlayer player;
-        CustomPlayer customPlayer;
-
+        
         switch (title) {
             case "Connect":
                 new RedisConnectListener(channel, pubSubMessage, persistanceManager);
@@ -41,18 +41,7 @@ public class RedisMessageEvent implements MessageListener {
                 new RedisSanctionListener(channel, pubSubMessage, persistanceManager);
                 break;
             case "Teleport":
-                if (args.get(0).equalsIgnoreCase("GlobalTeleport")) {
-                    String playername = args.get(1);
-                    String targetname = args.get(2);
-
-                    player = ProxyServer.getInstance().getPlayer(playername);
-                    ProxiedPlayer target = ProxyServer.getInstance().getPlayer(targetname);
-                    if (player.getServer() != target.getServer()) {
-                        player.connect(target.getServer().getInfo());
-                    }
-
-                    new RedisPublisher(persistanceManager, "Teleport").setArguments("Teleport", playername, targetname).publish(new RedisTarget(RedisTarget.RedisTargetType.SERVER));
-                }
+                new RedisTeleportListener(channel, pubSubMessage, persistanceManager);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + title);

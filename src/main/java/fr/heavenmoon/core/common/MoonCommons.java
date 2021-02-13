@@ -6,24 +6,13 @@ import fr.heavenmoon.core.common.config.PluginConfig;
 import fr.heavenmoon.core.common.logger.LoggerAdapter;
 import fr.heavenmoon.persistanceapi.config.DatabaseConfig;
 import fr.heavenmoon.persistanceapi.config.RedisConfig;
-import fr.heavenmoon.persistanceapi.customs.redis.RedisTarget;
+import fr.heavenmoon.persistanceapi.managers.redis.RedisTarget;
 import fr.heavenmoon.core.common.scheduler.ThreadFactoryBuilder;
-import fr.heavenmoon.persistanceapi.customs.server.CustomServer;
-import fr.heavenmoon.persistanceapi.customs.server.ServerStatus;
-import fr.heavenmoon.persistanceapi.customs.server.ServerType;
-import fr.heavenmoon.persistanceapi.customs.server.ServerWhitelist;
-import fr.heavenmoon.persistanceapi.managers.AddressManager;
-import fr.heavenmoon.persistanceapi.managers.PlayerManager;
-import fr.heavenmoon.persistanceapi.managers.ServerManager;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
@@ -70,6 +59,12 @@ public class MoonCommons
 		loadRedisConfig();
 		
 		this.persistanceManager = new PersistanceManager(config.getServerName(), databaseConfig, redisConfig);
+		
+		RedissonClient redissonClient = persistanceManager.getRedisManager().getRedissonClient();
+		RTopic<String> rTopic = redissonClient.getTopic(serverType.getName());
+		rTopic.addListener(getPlatform().getMessageEvent());
+		
+		getLogger().info("PubSub registered !");
 	}
 	
 	private void loadConfig()

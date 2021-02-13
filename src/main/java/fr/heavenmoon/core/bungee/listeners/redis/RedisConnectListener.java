@@ -4,7 +4,7 @@ import fr.heavenmoon.core.bungee.MoonBungeeCore;
 import fr.heavenmoon.core.bungee.format.Message;
 import fr.heavenmoon.core.common.MoonCommons;
 import fr.heavenmoon.core.common.format.message.PrefixType;
-import fr.heavenmoon.persistanceapi.customs.redis.PubSubMessage;
+import fr.heavenmoon.persistanceapi.managers.redis.PubSubMessage;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
 import fr.heavenmoon.persistanceapi.customs.player.CustomPlayer;
 import fr.heavenmoon.persistanceapi.customs.server.CustomServer;
@@ -39,6 +39,7 @@ public class RedisConnectListener
 		ProxiedPlayer player = ProxyServer.getInstance().getPlayer(args.get(0));
 		if (player == null)
 		{
+			System.out.println("wrong proxy, canceling...");
 			return;
 		}
 		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
