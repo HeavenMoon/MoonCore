@@ -79,7 +79,8 @@ public class Action {
         new DCommand("teleport", "/teleport", "Teleport to player", null, Collections.singletonList("tp"), new TeleportCommand(plugin), plugin);
         new DCommand("gtp", "/globalteleport", "Teleport to player (without warning server)", null, Collections.singletonList("ptp"), new GlobalteleportCommand(plugin), plugin);
         new DCommand("dev", "/dev", "dev command to display thing we want", null, Collections.singletonList(""), new DevCommand(plugin), plugin);
-
+        new DCommand("gsay", "/gsay", "send global message", null, Collections.singletonList(""), new GsayCommand(plugin), plugin);
+        
         new DCommand("info", "/info", "Info player", null, Collections.singletonList("whois"), new InfoCommand(plugin), plugin);
         new DCommand("bypass", "/bypass", "Bypass player", null, Collections.singletonList(""), new BypassCommand(plugin), plugin);
         new DCommand("rank", "/rank", "Rank player", null, Collections.singletonList(""), new RankCommand(plugin), plugin);

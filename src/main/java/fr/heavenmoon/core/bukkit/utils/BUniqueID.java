@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -106,8 +107,7 @@ public class BUniqueID
 	
 	public static String generate(String name)
 	{
-		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
-		return offlinePlayer.getUniqueId().toString();
+		return UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)).toString();
 	}
 	
 	public static UUID get(String name)

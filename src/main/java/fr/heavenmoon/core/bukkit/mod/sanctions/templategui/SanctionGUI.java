@@ -30,14 +30,14 @@ public class SanctionGUI extends AbstractGui {
         this.inventory = plugin.getServer().createInventory(null, 54, "Sanction : " + targetName);
 
         UUID uuid = BUniqueID.get(targetName);
-        CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
+        CustomPlayer customTarget = persistanceManager.getPlayerManager().getCustomPlayer(uuid);
 
-        setSlotData(customPlayer.getName(),
-                new HeadBuilder().setOwner(customPlayer.getName()).setName(ChatColor.AQUA + customPlayer.getName()).build(), 0,
-                new String[]{ChatColor.GRAY + "Grade: " + ChatColor.getByChar(customPlayer.getRankData().getStyleCode()) + customPlayer.getRankData().getRank().getPrefix(),
-                        ChatColor.GRAY + "Permission: " + ChatColor.BLUE + customPlayer.getRankData().getPermission(),
-                        ChatColor.GRAY + "Premium: " + (customPlayer.isPremium() ? (ChatColor.GREEN + "Oui") : (ChatColor.RED + "Non")),
-                ChatColor.GRAY + "AzLauncher: " + (customPlayer.isAzlauncher() ? (ChatColor.GREEN + "Oui") : (ChatColor.RED + "Non"))},
+        setSlotData(customTarget.getName(),
+                new HeadBuilder().setOwner(customTarget.getName()).setName(ChatColor.AQUA + customTarget.getName()).build(), 0,
+                new String[]{ChatColor.GRAY + "Grade: " + ChatColor.getByChar(customTarget.getRankData().getStyleCode()) + customTarget.getRankData().getRank().getPrefix(),
+                        ChatColor.GRAY + "Permission: " + ChatColor.BLUE + customTarget.getRankData().getPermission(),
+                        ChatColor.GRAY + "Premium: " + (customTarget.isPremium() ? (ChatColor.GREEN + "Oui") : (ChatColor.RED + "Non")),
+                ChatColor.GRAY + "AzLauncher: " + (customTarget.isAzlauncher() ? (ChatColor.GREEN + "Oui") : (ChatColor.RED + "Non"))},
                 null);
         ItemStack deco = new ItemBuilder().setMaterial(Material.STAINED_GLASS_PANE).setData(Byte.valueOf((byte) 15)).toItemStack();
         for (int i = 9; i < 18; i++)

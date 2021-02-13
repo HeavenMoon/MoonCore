@@ -3,6 +3,7 @@ package fr.heavenmoon.core.bungee.redis;
 import fr.heavenmoon.core.bungee.MoonBungeeCore;
 import fr.heavenmoon.core.bungee.format.Message;
 import fr.heavenmoon.core.bungee.listeners.redis.RedisConnectListener;
+import fr.heavenmoon.core.bungee.listeners.redis.RedisGsayListener;
 import fr.heavenmoon.core.bungee.listeners.redis.RedisSanctionListener;
 import fr.heavenmoon.core.bungee.listeners.redis.RedisTeleportListener;
 import fr.heavenmoon.core.common.format.message.PrefixType;
@@ -42,6 +43,9 @@ public class RedisMessageEvent implements MessageListener {
                 break;
             case "Teleport":
                 new RedisTeleportListener(channel, pubSubMessage, persistanceManager);
+                break;
+            case "gSay":
+                new RedisGsayListener(channel, pubSubMessage, persistanceManager);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + title);
