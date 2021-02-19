@@ -12,15 +12,15 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class InfoCommand implements CommandExecutor
+public class AccountCommand implements CommandExecutor
 {
 	
 	private final MoonBukkitCore plugin;
 	private final PersistanceManager persistanceManager;
 	private RankList rank = RankList.GUIDE;
-	private String syntax = "/info <player>";
+	private String syntax = "/account <player>";
 	
-	public InfoCommand(MoonBukkitCore plugin)
+	public AccountCommand(MoonBukkitCore plugin)
 	{
 		this.plugin = plugin;
 		this.persistanceManager = plugin.getCommons().getPersistanceManager();

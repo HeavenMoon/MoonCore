@@ -16,7 +16,6 @@ import fr.heavenmoon.core.bukkit.scoreboard.SbCommand;
 import fr.heavenmoon.core.common.utils.CommandBlocker;
 import fr.heavenmoon.core.common.utils.DCommand;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
@@ -82,7 +81,7 @@ public class Action {
         new DCommand("gsay", "/gsay", "send global message", null, Collections.singletonList(""), new GsayCommand(plugin), plugin);
         new DCommand("permission", "/permission", "add or remove permission", null, Collections.singletonList("perm"), new PermissionCommand(plugin), plugin);
         
-        new DCommand("info", "/info", "Info player", null, Collections.singletonList("whois"), new InfoCommand(plugin), plugin);
+        new DCommand("account", "/account", "player account", null, Collections.singletonList("whois"), new AccountCommand(plugin), plugin);
         new DCommand("bypass", "/bypass", "Bypass player", null, Collections.singletonList(""), new BypassCommand(plugin), plugin);
         new DCommand("rank", "/rank", "Rank player", null, Collections.singletonList(""), new RankCommand(plugin), plugin);
         new DCommand("reboot", "/reboot", "Reboot server", null, Collections.singletonList(""), new RebootCommand(plugin), plugin);

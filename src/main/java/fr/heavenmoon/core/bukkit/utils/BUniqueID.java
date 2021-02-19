@@ -65,8 +65,7 @@ public class BUniqueID
 						String result = EntityUtils.toString(entity);
 						JSONParser parser = new JSONParser();
 						JSONObject jsonObject = (JSONObject) parser.parse(result);
-						JSONObject id = (JSONObject) parser.parse(jsonObject.get("id").toString());
-						String UUID_String = id.toString();
+						String UUID_String = jsonObject.get("id").toString();
 						return UUID_String.substring(0, 8) + "-" + UUID_String.substring(8, 12) + "-" + UUID_String.substring(12, 16) + "-" + UUID_String.substring(16, 20) + "-" +
 								UUID_String.substring(20, 32);
 					}
