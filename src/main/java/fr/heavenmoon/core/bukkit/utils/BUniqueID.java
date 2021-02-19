@@ -29,8 +29,9 @@ public class BUniqueID
 {
 	private static final CloseableHttpClient httpClient = HttpClients.createDefault();
 	
-	private static final String PROFILE_URL = "https://api.mojang.com/users/profiles/minecraft/";
+	private static final String MOJANG = "https://api.mojang.com/users/profiles/minecraft/";
 	private static final String PLAYERDB = "http://playerdb.co/api/player/minecraft/";
+	private static final String MINETOOLS = "https://api.minetools.eu/uuid/";
 	private static JSONParser JSON_PARSER = new JSONParser();
 	
 	public static String generate()
@@ -40,13 +41,44 @@ public class BUniqueID
 	
 	public static String getMojang(String name)
 	{
-		List<String> APIS = Arrays.asList(PROFILE_URL, PLAYERDB);
+		List<String> APIS = Arrays.asList(MOJANG, PLAYERDB, MINETOOLS);
 		Random random = new Random();
 		String api = APIS.get(random.nextInt(APIS.size()));
+		HttpGet request;
 		switch (api)
 		{
+			case MINETOOLS:
+				request = new HttpGet(MINETOOLS + name);
+				
+				// add request headers
+				request.addHeader("custom-key", "mkyong");
+				request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
+				
+				try (CloseableHttpResponse response = httpClient.execute(request))
+				{
+					
+					HttpEntity entity = response.getEntity();
+					Header headers = entity.getContentType();
+					
+					if (entity != null) {
+						// return it as a String
+						String result = EntityUtils.toString(entity);
+						JSONParser parser = new JSONParser();
+						JSONObject jsonObject = (JSONObject) parser.parse(result);
+						JSONObject id = (JSONObject) parser.parse(jsonObject.get("id").toString());
+						String UUID_String = id.toString();
+						return UUID_String.substring(0, 8) + "-" + UUID_String.substring(8, 12) + "-" + UUID_String.substring(12, 16) + "-" + UUID_String.substring(16, 20) + "-" +
+								UUID_String.substring(20, 32);
+					}
+					
+				}
+				catch (IOException | ParseException e)
+				{
+					e.printStackTrace();
+				}
+				break;
 			case PLAYERDB:
-				HttpGet request = new HttpGet(PLAYERDB + "DAYELA");
+				request = new HttpGet(PLAYERDB + name);
 				
 				// add request headers
 				request.addHeader("custom-key", "mkyong");
@@ -74,7 +106,7 @@ public class BUniqueID
 					e.printStackTrace();
 				}
 				break;
-			case PROFILE_URL:
+			case MOJANG:
 				try
 				{
 					URL url = new URL(api + name);

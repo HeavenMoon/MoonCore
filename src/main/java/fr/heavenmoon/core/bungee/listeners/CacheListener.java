@@ -33,37 +33,34 @@ public class CacheListener implements Listener
 		String uuid = player.getUniqueId().toString();
 		String name = player.getName();
 		String address = player.getPendingConnection().getAddress().getAddress().getHostAddress();
+		//Load Address
+		CustomAddress customAddress = persistanceManager.getAddressManager().get(address);
+		customAddress.addAccounts(name);
+		persistanceManager.getAddressManager().update(customAddress);
 		
-		plugin.getProxy().getScheduler().runAsync(plugin, () ->
+		//Load Player
+		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(UUID.fromString(uuid));
+		if (!customPlayer.isExist())
 		{
-			//Load Address
-			CustomAddress customAddress = persistanceManager.getAddressManager().get(address);
-			customAddress.addAccounts(name);
-			persistanceManager.getAddressManager().update(customAddress);
-			
-			//Load Player
-			CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(UUID.fromString(uuid));
-			if (!customPlayer.isExist())
-			{
-				plugin.getCommons().getLogger().warn("The player does not exist !");
-				customPlayer.setExist(true);
-				customPlayer.setName(name);
-				customPlayer.setDisplayName(name);
-				customPlayer.setPremium(UniqueID.getMojang(name) != null);
-			}
-			customPlayer.setOnline(true);
-			customPlayer.setProxyName(plugin.getCommons().getConfig().getServerName());
-			customPlayer.setLastLogin(System.currentTimeMillis());
-			customPlayer.setLastIP(address);
-			List<String> allAddress = customPlayer.getAllAddress();
-			if (!allAddress.contains(address))
-			{
-				allAddress.add(address);
-			}
-			customPlayer.setAllAddress(allAddress);
-			persistanceManager.getPlayerManager().commit(customPlayer);
-			plugin.getCommons().getLogger().info("Player " + name + " registered with success !");
-		});
+			plugin.getCommons().getLogger().warn("The player does not exist !");
+			customPlayer.setExist(true);
+			customPlayer.setName(name);
+			customPlayer.setDisplayName(name);
+			customPlayer.setPremium(UniqueID.getMojang(name) != null);
+		}
+		customPlayer.setOnline(true);
+		customPlayer.setProxyName(plugin.getCommons().getConfig().getServerName());
+		customPlayer.setLastLogin(System.currentTimeMillis());
+		customPlayer.setLastIP(address);
+		List<String> allAddress = customPlayer.getAllAddress();
+		if (!allAddress.contains(address))
+		{
+			allAddress.add(address);
+		}
+		customPlayer.setAllAddress(allAddress);
+		persistanceManager.getPlayerManager().commit(customPlayer);
+		plugin.getCommons().getLogger().info("Player " + name + " registered with success !");
+
 	}
 	
 	@EventHandler(priority = 10)

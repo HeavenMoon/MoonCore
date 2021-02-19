@@ -78,6 +78,8 @@ public class CacheListener implements Listener
 	{
 		Player player = event.getPlayer();
 		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+		customPlayer.setOnline(true);
+		persistanceManager.getPlayerManager().commit(customPlayer);
 		persistanceManager.getPlayerManager().cache(customPlayer);
 		if (customPlayer.getRankData().getRank() == RankList.ADMINISTRATEUR)
 			event.getPlayer().setOp(true);

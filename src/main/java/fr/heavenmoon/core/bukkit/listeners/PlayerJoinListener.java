@@ -9,6 +9,7 @@ import fr.heavenmoon.core.common.format.message.PrefixType;
 import fr.heavenmoon.core.common.utils.builders.misc.TablistBuilder;
 import fr.heavenmoon.persistanceapi.customs.player.data.RankList;
 import fr.heavenmoon.persistanceapi.PersistanceManager;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -37,6 +38,12 @@ public class PlayerJoinListener implements Listener
 		event.setJoinMessage(null);
 		Player player = event.getPlayer();
 		CustomPlayer customPlayer = persistanceManager.getPlayerManager().getCustomPlayer(player.getUniqueId());
+		
+		if (customPlayer.getRankData().getPermission() < persistanceManager.getServerManager().getCustomServer(plugin.getCommons().getConfig().getServerName()).getWhitelist().getRank().getPermission())
+		{
+			player.kickPlayer(persistanceManager.getServerManager().getCustomServer(plugin.getCommons().getConfig().getServerName()).getWhitelist().getDescription());
+			return;
+		}
 		
 		initPlayer(player, customPlayer);
 		

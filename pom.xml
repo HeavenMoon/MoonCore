@@ -86,7 +86,6 @@
             <version>4.5.10</version>
         </dependency>
 
-
         <!--This adds the Spigot API artifact to the build -->
         <dependency>
             <groupId>org.spigotmc</groupId>
